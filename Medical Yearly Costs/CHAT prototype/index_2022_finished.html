@@ -1,0 +1,116 @@
+<html>
+	<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+	<script>window.jQuery || document.write('<script src="https://assets/js/libs/jquery-1.11.0.min.js"><\/script>')</script>
+	</head>
+	<body>
+		<button value="reset" id="reset_button">Reset</button>
+		<h1 class="points_bar">Points Spent: <span id="current_points"></span>/<span id="point_max"></span></h1>
+		<form>
+		<table>
+			<tr>
+				<th>Coverage</th><th>No Coverage</th><th>Basic</th><th>Advanced</th>
+			</tr>
+			<tr>
+				<td><span style="font-size: 24px;">Hospitalization</span><br />Pays for hospital bills - you need approval before the hospital will admit you, excepting emergency.</td>
+				<td><input type="radio" class="health_checks" name="hospitalization" value="none" data-pointCost="0" />0</td>
+				<td><input type="radio" class="health_checks" name="hospitalization" value="basic" data-pointCost="10" />10</td>
+				<td><input type="radio" class="health_checks" name="hospitalization" value="advanced" data-pointCost="14" />14</td>
+			</tr>
+			<tr>
+				<td><span style="font-size: 24px;">Primary</span><br />Pays for your primary or "family" doctor and staff. Your primary doctor can refer you to other doctors, order special services and tests.</td>
+				<td><input type="radio" class="health_checks" name="primary" value="none" data-pointCost="0" />0</td>
+				<td><input type="radio" class="health_checks" name="primary" value="basic" data-pointCost="4" />4</td>
+				<td><input type="radio" class="health_checks" name="primary" value="advanced" data-pointCost="6" />6</td>
+			</tr>
+			<tr>
+				<td><span style="font-size: 24px;">Pharmacy</span><br />Pays for medicines your doctor prescribes</td>
+				<td><input type="radio" class="health_checks" name="pharmacy" value="none" data-pointCost="0" />0</td>
+				<td><input type="radio" class="health_checks" name="pharmacy" value="basic" data-pointCost="3" />3</td>
+				<td><input type="radio" class="health_checks" name="pharmacy" value="advanced" data-pointCost="8" />8</td>
+			</tr>
+			<tr>
+				<td><span style="font-size: 24px;">Long-Term</span><br />Pays for your care over a long period of time in a residential or nursing home.</td>
+				<td><input type="radio" class="health_checks" name="long_term" value="none" data-pointCost="0" />0</td>
+				<td><input type="radio" class="health_checks" name="long_term" value="basic" data-pointCost="4" />4</td>
+				<td><input type="radio" class="health_checks" name="long_term" value="advanced" data-pointCost="8" />8</td>
+			</tr>
+			<tr>
+				<td><span style="font-size: 24px;">Mental Health and Substance Abuse</span><br />Pays for counseling and therapy, treatment of mental illness, and alcohol and drug abuse.</td>
+				<td><input type="radio" class="health_checks" name="mental_health" value="none" data-pointCost="0" />0</td>
+				<td><input type="radio" class="health_checks" name="mental_health" value="basic" data-pointCost="2" />2</td>
+				<td><input type="radio" class="health_checks" name="mental_health" value="advanced" data-pointCost="3" />3</td>
+			</tr>
+			<tr>
+				<td><span style="font-size: 24px;">Dental</span><br />Pays for care of your teeth.</td>
+				<td><input type="radio" class="health_checks" name="dental" value="none" data-pointCost="0" />0</td>
+				<td><input type="radio" class="health_checks" name="dental" value="basic" data-pointCost="2" />2</td>
+				<td><input type="radio" class="health_checks" name="dental" value="Advanced" data-pointCost="6" />6</td>
+			</tr>
+			<tr>
+				<td><span style="font-size: 24px;">Home Health</span><br />Pays for in-home care if you are chronically ill/too disabled to care for yourself.</td>
+				<td><input type="radio" class="health_checks" name="home_health" value="none" data-pointCost="0" />0</td>
+				<td><input type="radio" class="health_checks" name="home_health" value="basic" data-pointCost="2" />2</td>
+				<td><input type="radio" class="health_checks" name="complementary" value="Advanced" data-pointCost="3" />3</td>
+			</tr>
+			<tr>
+				<td><span style="font-size: 24px;">Specialty</span><br />Professional services including chriopractors, physical therapists, podiatrists, and others</td>
+				<td><input type="radio" class="health_checks" name="specialty" value="none" data-pointCost="0" />0</td>
+				<td><input type="radio" class="health_checks" name="specialty" value="basic" data-pointCost="7" />7</td>
+				<td><input type="radio" class="health_checks" name="specialty" value="Advanced" data-pointCost="14" />14</td>
+			</tr>
+			<tr>
+				<td><span style="font-size: 24px;">Medical Equipment</span><br />Pays for equipment like wheel chairs, hearing aids, artificial limbs, etc.</td>
+				<td><input type="radio" class="health_checks" name="medical_equipment" value="none" data-pointCost="0" />0</td>
+				<td><input type="radio" class="health_checks" name="medical_equipment" value="basic" data-pointCost="1" />1</td>
+				<td><input type="radio" class="health_checks" name="medical_equipment" value="advanced" data-pointCost="2" />2</td>
+			</tr>
+			<tr>
+				<td><span style="font-size: 24px;">Vision</span><br />Pays for eye exams, glasses, and contact lenses.</td>
+				<td><input type="radio" class="health_checks" name="vision" value="none" data-pointCost="0" />0</td>
+				<td><input type="radio" class="health_checks" name="vision" value="basic" data-pointCost="1" />1</td>
+				<td><input type="radio" class="health_checks" name="vision" value="advanced" data-pointCost="2" />2</td>
+			</tr>
+			<tr>
+				<td><span style="font-size: 24px;">Complementary</span><br />Pays for "Alternative" treatments such as acupuncture and spiritual healing.</td>
+				<td><input type="radio" class="health_checks" name="complementary" value="none" data-pointCost="0" />0</td>
+				<td><input type="radio" class="health_checks" name="complementary" value="basic" data-pointCost="1" />1</td>
+				<td><!--<input type="radio" class="health_checks" name="complementary" value="advanced" data-pointCost="0" />0--></td>
+				<td><!--<input type="radio" class="health_checks" name="complementary" value="Advanced" data-pointCost="0" />0--></td>
+			</tr>
+			<tr>
+				<td><span style="font-size: 24px;">Tests</span><br />Pays for blood work, x-rays, or other tests you need.</td>
+				<td><input type="radio" class="health_checks" name="tests" value="none" data-pointCost="0" />0</td>
+				<td><input type="radio" class="health_checks" name="tests" value="basic" data-pointCost="3" />3</td>
+				<td><input type="radio" class="health_checks" name="tests" value="advanced" data-pointCost="4" />4</td>
+			</tr>
+		</table>
+		</form>
+	</body>
+	<script language="javascript" type="text/javascript">
+	var max_points = 45;
+			$(document).ready(function(){
+				$('#point_max').text(max_points);
+				$('.health_checks').on('change', do_math);
+				$('#reset_button').on('click', function(){
+				$('.health_checks').attr('checked', false);
+				do_math();
+				});
+				do_math();
+			});
+			function do_math(){
+			var current_cost = 0;
+			$('.health_checks:checked').each(function(){
+				current_cost = current_cost + $(this).data('pointcost');
+			});
+			$('#current_points').text(current_cost);
+			if (current_cost > max_points) {
+				$('.points_bar').css('color', 'red');
+				} else {
+				$('.points_bar').css('color', 'green');
+				}
+			}
+		</script>
+	<footer>
+	</footer>
+</html>
