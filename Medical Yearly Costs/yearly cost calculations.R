@@ -1,0 +1,41 @@
+#hospitalization
+32450/329
+408978/211
+220838/65
+#primary
+59411/329
+300644/211
+86766/65
+#prescription
+46460/329
+140888/211
+34546/65
+#nursing
+45276/329
+16718/211
+53232/65
+#dental
+53198/329
+59707/211
+12637/65
+#home care
+12621/329
+15695/211
+40187/65
+#Other prof services
+25771/329
+32884/211
+8298/65
+#durable goods
+23270/329
+10584/211
+8541/65
+#Vision
+56915/329
+#alternative care
+42315/329
+#lab testing
+5481/211
+7830/65
+
+#personal health care (total spend)
