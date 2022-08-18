@@ -39,3 +39,6 @@
 7830/65
 
 #personal health care (total spend)
+388646/329
+1000234/211
+586914/65
