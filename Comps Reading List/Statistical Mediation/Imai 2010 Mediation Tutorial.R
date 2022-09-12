@@ -161,6 +161,65 @@ update.packages("mediation")
 #this is essentially an application of the iterative feasible generalized
 #least square algorithm.
 
+##Binary Outcome Case
+
+#Sensitivity analysis for binary outcome paralells the case when both
+#mediator and outcome are continuous. We assume the model is a probit regression
+#Using this probit regression for our outcome allows us to assume the error
+#terms are jointly normal with a possible nonzero correlation, Rho.
+
+#We derive the average causal mediation effects as a function of Rho, and a set
+#of parameters that are identifiable due to the randomization of the treatment
+# Rho is used here as a sensitivity parameter, similar to how it's used in the
+#Baron-Kenny Procedure, CI's are calculated using quasi-Bayesian algorithm 1
+#by approximating the posterior distribution with the sampling distribution of
+#the maximum likelihood estimates
+
+## Binary Mediator Case
+
+#We can also pull sensitivity analysis when the mediator is dichotomous
+#and the outcome is continous. In this case, we assume the mediator can
+#be modeled as a probit regression w/ the error term iid as standard normal
+# a linear normal regression w/ error variance equal to error_3 is used to
+#model the continous outcome variable.
+
+#Also assume that the 2 error terms jointly follow a bivariate normal 
+#distribution, w/ mean 0 and covariacne rho * error_3. Like the other two
+#cases, the correlation b/w error terms, rho, as our sensitivity parameter
+#we show that the causal mediation effects can be expressed as a function of 
+#model parameters, consistently estimable, given a fixed value of Rho.
+
+#we can summarize these using plot() similar to the first two cases.
+
+#################################################
+# Alternative Interpretation Based on R_squared #
+#################################################
+
+# Main advantage of using Rho as our sensitivity parameter is increased simplicity
+# However... interpreting the correlation coefficient magnitude can be hard.
+
+#Alternative interpretation of Rho based on coefficients of determination (Rsquared)
+#that can be extended to binary mediator and outcome cases. In these formulations,
+#we assume that a common unobserved pretreatment confounder exists for both the 
+#mediator and outcome models.
+
+#applied researchers then specify whether the coeffcients of this unobserved confounder
+#in the 2 models have the same sign or not, sgn(l2 * l3) = 1 or −1 where l2 and l3
+#are the lambda coefficients in the mediator and outcome models, respectively.
+
+#once we have this... the ACME can be expressed as a function of the 
+#"proportions of original variances expalined by the unobserved confounder"
+#where the original variances refer to the variances of the mediator and the outcome
+#or the var of the latent variable in the case of binary dependent variable.
+
+#alternatively... ACME can be expressed in terms of 
+#"the proportion of the previously unexpalined variances expalined by the unobserved
+# confounder". This is an excellent explanation!
+
+#we must quantify how large the unobserved confounder must be (relative to our 
+#observed pretreatment covariates in the model) in order for our original conclusions
+#to be REVERSED!!
+
 
 
 
