@@ -1,5 +1,15 @@
+
+ #########################################################################
+ #########################################################################
+ ##                                                                     ##
+ ## BIG NOTE, UPDATED TUTORIAL CAN BE FOUND IN vignette("mediation")!!! ##
+ ##                                                                     ##
+ #########################################################################
+ #########################################################################
+
 # From "Advances in Social Science Research Using R #
 ### Chapter 8: Causal Mediation Analysis Using R ####
+
 
 #following up from Imai 2008 and Imai 2009 algorithims to estimate causal mediation
 #we can estimate causal mediation effects for linear and nonlinear relations
@@ -208,12 +218,12 @@ update.packages("mediation")
 #are the lambda coefficients in the mediator and outcome models, respectively.
 
 #once we have this... the ACME can be expressed as a function of the 
-#"proportions of original variances expalined by the unobserved confounder"
+#"proportions of original variances explained by the unobserved confounder"
 #where the original variances refer to the variances of the mediator and the outcome
 #or the var of the latent variable in the case of binary dependent variable.
 
 #alternatively... ACME can be expressed in terms of 
-#"the proportion of the previously unexpalined variances expalined by the unobserved
+#"the proportion of the previously unexplained variances explained by the unobserved
 # confounder". This is an excellent explanation!
 
 #we must quantify how large the unobserved confounder must be (relative to our 
@@ -221,6 +231,117 @@ update.packages("mediation")
 #to be REVERSED!!
 
 
+#######################
+# Current Limitations #
+#######################
 
+#The package, mediation, is VERY flexible and can easily handle many of the
+#model tyupes that researchers are likely to use in practice
+# This includes mediator types (continuous, ordered and binary) using 
+#both Continuous outcomes for all three, and binary for all except ordered.
+# for all these examples, we can produce both point and uncertainty estimates
+# of the causal mediation effects
 
+## This software can also conveniently probe sensitivity of results to
+## potential violations of the ignorability assumption for certain model types
+## This requires specific derivations for each combo of models
+## For continous mediator, we use can use sensitivity analysis to look at
+# continous and binary outcomes, for binary mediator, we can 
+#use sensitivity analysis for continous outcomes. For those that combine
+#binary and continous mediators/outcomes, we can use probit regression model
+#with a linear regression model this allows for jointly normal errors in the analysis!
 
+############
+# EXAMPLES #
+############
+
+library("mediation")
+data("jobs")
+
+#Example using dataset from JOBS II study
+# outcome variables are continous depression variable, binary 'has a job' variable
+# Continous measure of job-search self-effiacy is mediating variable
+
+#also measures baseline covariates: pretreatment depression, education
+# income, race, martial status, age, sex, previous job, and economic hardship.
+
+##########################################
+# Estimation of Causal Mediation Effects #
+##########################################
+
+#Baron-Kenny Procedure
+
+#First example has both mediator and outcome as continous
+#results from EITHER algo will give point estimates identical to the usual
+#Baron and Kenny procedure, using either the quasi-Bayesian, or nonparametric
+#bootstrap approximation
+
+#we first estimate 2 linear regressions for both mediator and outcome
+#using the lm() function
+
+model.m<-lm(job_seek~treat+depress1+econ_hard+sex+age+occp+marital+nonwhite+educ+income,
+            data= jobs)
+model.y<-lm(depress2~treat+ job_seek+ depress1+econ_hard+sex+age+occp+marital+nonwhite+educ+income,
+            data= jobs)
+
+#our first two model objects, model.m and model.y are the arguments for 
+#the mediate function itself.
+
+#note that we have to give a fuck about missing values!!
+#While model fxns in R handle missing values in the data using listwise
+#deletion procedures, the functions in mediation  assume that missing values
+#have been ALREADY removed before the estimation of the two models
+
+# THUS, the two models MUST have identitical observations
+#sorted in the EXACT SAME ORDER with all missing values removed
+#the R fxn na.omit() can address this nicely
+
+#in our first usage of mediate(), we specify boot = TRUE to specify a nonparametric
+#bootstrap wth 1000 resamples (sims = 1000). When we set it to FALSE in the
+#second usage, inference instead proceeds via the qasi-Bayesian Monte Carlo
+#approximation using algo 1 rather than aglo 2
+
+#Note that we MUST specify the variable names for the treatment indicator
+#and the mediator variable using treat and mediator respectively!
+
+out.1 <- mediate(model.m, model.y, sims = 1000,
+                 boot = TRUE, treat = "treat", mediator = "job_seek")
+
+out.2 <- mediate(model.m, model.y, sims = 1000,
+                 treat = "treat", mediator = "job_seek")
+
+#the objects that we make using mediate(), i.e. out.1 and out.2, are LISTS
+#that contain several different quantities from the analysis...
+
+#for example, out.1$d0 returns the point estimate for the ACME
+#based on algo 1
+
+out.1$d0
+
+#The help file contains a full list of values contained in mediate() objects
+#the summary() function prints out the results in table form
+
+summary(out.1)
+
+summary(out.2)
+
+#The output from summary() fxn dispalys the estimates for the 
+#average causal mediation effect, the direct effect, the total effect
+#and the proportion of total effect mediated
+
+#the 1st column is the quantity of interest, the 2nd column displays the point
+#estimate, and the other columns have the 95% CI.
+#Researchers can easily report these point estimates and corresponding uncertainty
+#in their work!, we find that job serach self efficacy mediated the effect of the
+#trreatment on depression in the NEGATIVE direction,
+
+#this effect was small with a point estimate of -.134, but the 95% CI contains
+#exactly 0
+
+###############################################
+# Baron-Kenny Procedure with INTERACTION term #
+###############################################
+
+#we can also allow for our causal mediation effect to vary with treatment status
+#here, our model for our outcome MUST be altered by including an interaction term
+#between the treatment indicator 'treat' and the mediator variable 'job_seek'
