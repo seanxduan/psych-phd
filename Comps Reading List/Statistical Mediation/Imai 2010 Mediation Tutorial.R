@@ -345,3 +345,106 @@ summary(out.2)
 #we can also allow for our causal mediation effect to vary with treatment status
 #here, our model for our outcome MUST be altered by including an interaction term
 #between the treatment indicator 'treat' and the mediator variable 'job_seek'
+
+model.y <- lm(depress2 ~ treat + job_seek
+              + treat:job_seek + depress1 + econ_hard + sex
+              + age + occp + marital + nonwhite + educ
+              + income, data = jobs)
+
+# NOTE! under this current implementation the interaction term MUST be specified in the form
+#of treat.name:med.name, w/ the names of the treatment and mediator variable in the model
+#respectively. Next, we have a call made again using the mediate function, but with
+#the option INT = TRUE specified!
+
+out.3 <- mediate(model.m, model.y, sims = 1000,
+                 boot = TRUE, treat = "treat", mediator =
+                   "job_seek")
+
+#oh, int has been depreciated! existence of interaction terms is now automatically detected from
+#the model formulas
+
+out.4 <- mediate(model.m, model.y, sims=1000,
+                 treat = "treat", mediator =
+                   "job_seek")
+
+summary(out.3)
+
+#looking at our summary... we see that the estimates for the mediation and direct effects
+#correspond to the levels of the treatment and are referred to as such in the summary.
+
+#in this case, our mediation effect under the treatment c ondition, listed as 'treat'
+#is estimated to be -.0117, while the control condition has -0.0185
+
+summary(out.4)
+
+########################################
+# Use of non/semiparametric regression #
+########################################
+
+#The flexibility of mediation becomes very apparent when we move beyond standard linear regression
+#models, e.g. the mediator can be suspected to have a nonlinear effect on the outcome
+# Generalized Additive Models (GAMs) allow us to use splines to for flexible nonlinear fits
+#this is VERY easy for the mediate() function!
+
+#we do the same analysis with the mediator as before, but we alter the outcome model
+#using the gam() function from the mgcv library
+
+library(mgcv)
+
+model.m <- lm(job_seek ~ treat + depress1
+              + econ_hard + sex + age + occp + marital
+              + nonwhite + educ + income, data = jobs)
+
+model.y <- gam(depress2 ~ treat + s(job_seek,
+                                    bs = "cr") + depress1 + econ_hard + sex + age
+               + occp + marital + nonwhite + educ + income,
+               data = jobs)
+
+#Here, we fit a GAM for the outcome variable, and allow the effect of the job_seek variable
+#to be nonlinear and determined by the data. This is done by using the s() notation, which
+#allows for the fit between the mediator and outcome to be modeled with a spline.
+
+#using the spline for the fit allows the estimate for hte mediator on the outcome to be a
+#series of 'piecewise' polynomial regression fits. This semiparametric regression model
+#is a more general version of nonparametric regression models such as lowess.
+
+#the model above allows the estiamte to vary across the range of the predictor variable
+#Here, we specify the model with a cubic basis function (bs = "cr") for the smoothing spline
+#and leave the smoothing selection to be done at program defaults (generalized cross-validation)
+
+#The full scope of how to fit these models is in your old data III textbook
+
+
+#The call to mediate() with a gam() fit remains unchanged, except that when the outcome model
+#is a semiparametric regression... only the nonparametric bootstrap is valid for calculating 
+#uncertainty estimates, e.g. boot = TRUE
+
+out.5 <- mediate(model.m, model.y, sims = 1000,
+                 boot = TRUE, treat = "treat", mediator = "job_seek")
+
+summary(out.5)
+
+#The model for the mediator can also be modeled wit the gam() function as well, the 
+#gam() function allows analysts to include interactions; thus, we can still allow mediation
+#effects to vary with treatment status. This requires us to alter our model by using the 'by'
+#option in the gam() function, and using TWO separate indicator variables for treatment status
+
+#to fit this model, we need one variable that indicates whether the observation was in the
+#treatment group, and a second variable that indicates whether the obs was in the control group
+#to allow the mediation effect to vary with treatment status, the call to gam() is the following
+
+model.y <- gam(depress2 ~ treat + s(job_seek, by = treat)
+               + s(job_seek, by = control) + depress1 + econ_hard + sex
+               + age + occp + marital + nonwhite + educ + income,
+               data = jobs)
+
+#next, we must also alter the options in mediate() by providing
+#the variable name for the control group indicator using the control option
+
+out.6 <- mediate(model.m, model.y, sims = 1000,
+                 boot = TRUE, treat = "treat",
+                 mediator = "job_seek", control = "control")
+
+#weird error here... double check the vignette?
+summary(out.6)
+
