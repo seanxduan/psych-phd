@@ -446,5 +446,161 @@ out.6 <- mediate(model.m, model.y, sims = 1000,
                  mediator = "job_seek", control = "control")
 
 #weird error here... double check the vignette?
+#my guess here is that treat is set to 'treat' instead of '1' which is the value
+#in the treatment column?
+
+#if not...
+
 summary(out.6)
 
+#Based on the output that we're SUPPOSED to get...(from the tutorial itself)
+#we see that even tho the mediator was specified as a nonparametric function
+#we still see point estimates and CI's for the mediation effect across each
+#treatment level.
+
+#In the table, mediation effect_0 and direct effect_0 are the medation and direct
+#effects respectively under control and effect_1 is for under treatment.
+
+#######################################
+## Quantile Causal Mediation Effects ##
+#######################################
+
+#what if we want to model mediation effects for quantiles of the outcome?
+#Quantile regression allows for us to address this, while adjusting for
+#a variety of covariates.
+
+#For example... we might be wanted to know the .5 quantile (i.e Median)
+#of our distribution. This is SUPER easy to do in mediate()!
+
+#For these models, uncertainty estimates are calculated using nonparametric bootstrp
+#thus, we need to load the quantreg library and model the median of our outcome
+#although we can look at any quantile that we want. Note that we can also relax
+#our no-interaction assumption for the quantile regression model as well
+
+#we estimate our mediator using a standard linear regression, but our outcome
+#is estimated with a rq() to model the median
+
+install.packages("quantreg")
+library(quantreg)
+
+model.m <- lm(job_seek ~ treat + depress1 + econ_hard
+              + sex + age + occp + marital + nonwhite + educ + income,
+              data = jobs)
+
+model.y <- rq(depress2 ~ treat + job_seek + depress1
+              + econ_hard + sex + age + occp + marital + nonwhite
+              + educ + income, tau= 0.5, data = jobs)
+
+out.7 <- mediate(model.m, model.y, sims = 1000,
+                 boot = TRUE, treat = "treat", mediator = "job_seek")
+
+summary(out.7)
+
+#looking at our summary, we see that the estimated median causal mediation
+#effect and estimates for other quantities.
+
+#we can have other quantiles by specifying different values in the tau argument
+#for rq() out of the quantreg package
+
+########################################
+## Discrete Mediator and Outcome Data ##
+########################################
+
+#we can have measures for mediator and outcome that are DISCRETE, for standard methods
+#there are a shit-ton of complications for doing so. Mediate() can deal with
+#it using the algos developed in Imai 2010
+
+#For example, lets use the JOBS II binary indicator (work1) to see whether
+#or not the subject was employed after training. We use a probit instead of
+#a linear regression for our outcome, and call mediate the same way as before
+
+model.m <- lm(job_seek ~ treat + depress1 + econ_hard
+              + sex + age + occp + marital + nonwhite + educ + income,
+              data = jobs)
+
+model.y <- glm(work1 ~ treat + job_seek + depress1
+               + econ_hard + sex + age + occp + marital + nonwhite + educ
+               + income, family = binomial(link = "probit"), data = jobs)
+
+out.8 <- mediate(model.m, model.y, sims = 1000,
+                 boot = TRUE, treat = "treat", mediator = "job_seek")
+
+out.9 <- mediate(model.m, model.y, sims = 1000,
+                 treat = "treat", mediator = "job_seek")
+
+summary(out.8)
+
+summary(out.9)
+
+#We see in our second summary (non bootstrapped one) that the estimated ACME
+#and the quasi-bayesian CI is printed on the 1st line, followed by the direct
+#and total effects, as well as the proportion of the total effect due to mediation.
+
+#We can use a logit model here as well, but we recommend a probit because implemention
+#of sensitivty analysis requires probit model for analytical tractability
+
+#The mediator itself can also be binary or ordered measure, but this requires
+#modeling the mediator with either a probit or ordered probit model
+
+#we have job_dich and job_disc, which are recoded versions of job_seek that 
+#we can use to test this. The first, is our continous scale divided at the median
+#into a binary variable. Our second measure, recodes the continous scale into
+#a DISCRETE four point scale. THIS IS FOR DEMONSTRATION ONLY
+
+#lets look at a probit model for our mediator and linear regression for our
+#outcome!
+
+model.m <- glm(job_dich ~ treat + depress1 + econ_hard
+               + sex + age + occp + marital + nonwhite + educ + income,
+               data = jobs, family = binomial(link = "probit"))
+
+model.y <- lm(depress2 ~ treat + job_dich + treat:job_dich
+              + depress1 + econ_hard + sex + age + occp + marital
+              + nonwhite + educ + income, data = jobs)
+
+#we look to allow the effect of the mediator to vary with treatment status
+#we then call mediate and use either quasi-Bayesian approximation or
+#the nonparametric bootstrap
+
+out.10 <- mediate(model.m, model.y, sims = 1000,
+                  boot=TRUE, treat="treat", mediator="job_dich")
+
+out.11 <- mediate(model.m, model.y, sims = 1000,
+                  treat = "treat", mediator = "job_dich")
+
+summary(out.10)
+
+summary(out.11)
+
+#looking at our results for the non-bootstrap, we see the mediation effect 
+#under our control condition, and the mediation effect under our treatment
+
+#the direct effect of both is also visible.
+
+#When our mediator is ordered... we can switch to an ordered probit model
+#for our mediator. In R, the polr() function in MASS library does this.
+library(MASS)
+
+jobs$job_disc<-as.factor(jobs$job_disc)
+
+model.m <- polr(job_disc ~ treat + depress1 + econ_hard
+                + sex + age + occp + marital + nonwhite + educ + income,
+                data = jobs, method = "probit", Hess = TRUE)
+model.y <- lm(depress2 ~ treat + job_disc + depress1
+              + econ_hard + sex + age + occp + marital + nonwhite
+              + educ + income, data = jobs)
+
+#note that Hess = TRUE needs to be specified to use quasi-bayesian approximation
+
+out.12 <- mediate(model.m, model.y, sims = 1000,
+                  boot = TRUE, treat = "treat", mediator = "job_disc")
+out.13 <- mediate(model.m, model.y, sims = 1000,
+                  treat = "treat", mediator = "job_disc")
+
+summary(out.12)
+
+summary(out.13)
+
+#Final note, we can relax the no-interaction assumption as before by including
+#the interaction between treatment and mediator in the outcome model
+#and using the INT = TRUE option.
