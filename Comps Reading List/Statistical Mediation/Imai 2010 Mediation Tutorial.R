@@ -604,3 +604,183 @@ summary(out.13)
 #Final note, we can relax the no-interaction assumption as before by including
 #the interaction between treatment and mediator in the outcome model
 #and using the INT = TRUE option.
+
+
+##########################
+## Sensitivity Analysis ##
+##########################
+
+#We can explore how robust our findings are to the ignorability assumption.
+#the medsens() function in mediate allows for us to conduct sensitivty analysis
+#this can be done for continuous/continuous, binary/continuous, and continuous/binary
+
+#Through the Baron-Kenny procedure, we first fit these models for our mediator and outcome
+
+model.m <- lm(job_seek ~ treat + depress1 + econ_hard
+              + sex + age + occp + marital + nonwhite + educ + income,
+              data = jobs)
+
+model.y <- lm(depress2 ~ treat + job_seek + depress1
+              + econ_hard + sex + age + occp
+              + marital + nonwhite + educ + income, data = jobs)
+
+med.cont <- mediate(model.m, model.y, sims=1000,
+                    treat = "treat", mediator = "job_seek")
+
+#then the output from the mediate function becomes the argument for medsens()
+#medsens() recognizes the options specified in mediate, thus, we don't need to respecify
+
+sens.cont <- medsens(med.cont, rho.by = 0.05)
+
+#The rho.by option specifies how finely incremented the parameter rho is for sensitivity
+#analysis. Using a coarser grid for rho speeds up estimation, but comes at the cost of
+#estimating the robustness of the original conclusion only imprecisely.
+
+#after running medsens, we can use the summary function on our output to produce
+#a table with values of rho for which the CI contains zero. This allows for the analyst
+#to immediately see the approximate range of rho where the sign of causal mediation effect
+#is indeterminate
+
+#the second section of the table contains value of rho for which the mediation effect is 
+#exactly zero, here, it's around -.19. This table also presentes coefficients of determination
+#that correspond to the critical value of  rho when the mediation effect is zero. First,
+#R*2MR*2Y is the product of coefficients of determination which represents the proportion of 
+#previously unexplained variance in the mediator and outcome variables that is explained
+#by an unobserveable pretreatment unconfounder.
+
+#an alternative formluation is in terms of the proportion of ORIGINAL variance explained
+#by an unobserved confounder, here denoted in the last column
+
+summary(sens.cont)
+
+#this table above presents the estimated mediation effect along with it's CI for each
+#value of rho. The reader can verify that when rho is equal to zero, the mediation effect
+#matches the estimate produced by the mediate() function.
+
+#for other values of rho, the mediation effect is calculated under different levels 
+#of unobserved confounding
+
+#the information from the sensitivity analysis can also be summarized graphically using
+#the plot() function. We pass the medsens object, and specify sens.par option to rho
+
+plot(sens.cont, sens.par = "rho")
+
+#the dashed horizontal line represents the estimated mediation effect 
+#under sequential ignorability. Solid line represents mediation effect
+#under various values of rho. The grey region represents 95% confidence bands
+
+#similarity you can plot sensitivity analysis in terms of the 
+#coefficients of determination as discussed above. Here, we specify
+#sens.par to 'R2', also, r.type option tells the plot function whether to
+#plot the first or second time of proportional variance (type 1 or 2)
+#finally, the sign.prod option specifies the sign of the product of 
+#the coefficients of the unobserved confounder in the mediator and outcome models
+#this product indicates whether the unobserved confounder affects both
+#mediator and outcome variables in the same direction (1) or different
+#directions (-1), reflecting the analyst expectations about the nature
+#of the confounding.
+
+#for example, the command below produces a plot representing sensitivityy of 
+#estimates with respect to the proportion of the original variances explained 
+#by the unobserved confounder when the confounder is hypothesized
+#to affect the mediator and outcome variables in opposite directions.
+
+plot(sens.cont, sens.par = "R2", r.type = 2,
+     sign.prod = -1)
+
+#Each contour line represents the mediation effect for various values of
+#R2M and R2Y. For example, the zero  contour line corresponds to values of the product
+#such that the ACME is 0. Even a small proportion of original variance
+#unexplained by the confounder produces mediation effects of 0!
+
+#Accordingly, the plot shows how increases in the product (moving from lower
+#left to upper right) produces POSITIVE mediation effects!
+
+#note that we can specify additional options (main, xlab, ylab, xlim, etc.)
+
+##################
+# Binary Outcome #
+##################
+
+#continuous mediator, outcome binary
+#If either variable is binary, medsens() takes an additional argument
+
+model.y <- glm(work1 ~ treat + job_seek + depress1
+               + econ_hard + sex + age + occp + marital + nonwhite
+               + educ + income, family = binomial(link = "probit"),
+               data = jobs)
+
+med.bout <- mediate(model.m, model.y, sims = 1000,
+                    treat = "treat", mediator = "job_seek")
+
+sens.bout <- medsens(med.bout, rho.by = 0.05,
+                     sims = 1000)
+
+#the 'sims' option provides control over the # of draws in the parametric
+#bootstrap procedure which is used to compute confidence bands.
+#when either the mediator our outcome is binary, the exact values of sens
+#itivity parameters where the mediation effects are 0 cannot be
+#analytically obtained, THUS this information is reported based on
+#the signs of the estimated mediation effects under various values of
+#rho and corresponding coefficients of determination.
+
+#the use of summary() function is identical to fully continuous case
+#in that the output table contains estimated mediation effects and values
+#of rho for which the CI contains zero.
+
+#we can plot this as well!
+
+plot(sens.bout, sens.par = "rho")
+
+plot(sens.bout, sens.par = "R2", r.type = 2,
+     sign.prod = 1)
+
+#on the first graph, we plot the ACME in terms of rho, while we use
+#proportion mediated on the second plot.
+
+#in the rho plot, the dashed line represents the estimated mediation effect
+#under sequential ignorability, the solid line represents mediation effect
+#under various values of rho, grey represents 95% confidence bands
+
+#interpretation is the same!
+
+###################
+# Binary Mediator #
+###################
+
+#Finally, we can have outcome continuous, and mediator binary, we examine
+#this by using our dichotomized variable, job_dich. We begin by fitting a
+#probit model for our mediator and linear regression for our outcome variable.
+
+model.m <- glm(job_dich ~ treat + depress1
+               + econ_hard + sex + age + occp + marital + nonwhite
+               + educ + income, data = jobs,
+               family = binomial(link = "probit"))
+
+model.y <- lm(depress2 ~ treat + job_dich+ depress1
+              + econ_hard + sex + age + occp
+              + marital + nonwhite + educ + income, data = jobs)
+
+med.bmed <- mediate(model.m, model.y, sims = 1000,
+                    treat = "treat", mediator = "job_dich")
+
+sens.bmed <- medsens(med.bmed, rho.by = 0.05,
+                     sims = 1000)
+
+#the output of which can be passed to the plot function ()
+
+plot(sens.bmed, sens.par = "rho")
+
+#This plot is interpreted same as the above cases, we can plot 
+#sensitivity results in terms of the coefficients of determination just
+#as in the case with continous outcome and mediator variables.
+
+#note thatwhen mediator variable is binary, the plotted values of the
+#mediation effects and their confidence bands may not be perfectly smooth curves
+#due to simulation errors, ESPECIALLY when # of sims is set to a small value
+
+#we can use smooth.effect and smooth.ci set to TRUE in the plot() function
+#so that the corresponding values are smoothed via lowess and look better
+#but this adjustment can affect conclusions in a substantive way.
+
+#You should just increase the # of simulations!
