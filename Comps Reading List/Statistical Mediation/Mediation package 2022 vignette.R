@@ -142,3 +142,180 @@ med.out <- mediate(med.fit, out.fit, treat = "treat", mediator = "emo",
                    robustSE = TRUE, sims = 100)
 
 summary(med.out)
+
+#Looking at our output, the estiamtes for various ACME and ADE for both
+#control and treated condition exists, as well as p-values for various estimates
+#Here, our estimated ACME's are different from 0, but our estimated
+#average direct and total effects are not! This suggests that the treatment in
+#the framing experiment may have increased emotional response, which leads to
+#subjects being more likely to send messages to congress.
+
+#Since our outcome is binary, all estiamted effects are expressed as an increase in
+#probability that the subject sent a message to his or her Congress person. Note that
+#we can also use the nonparametric bootstral rather than quasi-Bayesian monte carlo
+#for variance estimation by setting boot = TRUE.
+
+med.out <- mediate(med.fit, out.fit, boot = TRUE, treat = "treat",
+                   mediator = "emo", sims = 100)
+summary(med.out)
+
+#looking at our results, we see that for our output our bootstrap is what is used
+#for inference. The results are largely the same. Generally, if you have computing power
+#analysts should try to have more than 1000 resamples (the default)
+
+#Two types of methods for calculating bootstrap based CI's are available via
+#boot.ci.type argument. Percentiles are done by setting argument to 'perc',
+#bias corrected and accelerated intervals are computed when setting to 'bca'.
+#The latter has better asymptotic properties and is recommended for estimation
+#of mediation effects
+
+#An alternative, we can use mediate as the input into plot command
+
+plot(med.out)
+
+#Treatment and Mediator Interaction
+
+#It's possible that our ACME values are different depending on baseline treatment
+#status. Here, then we can add an interaction term betwen our treatment and our
+#mediator to the outcome model. The mediate function automatically detects this change
+#and explicitly estimates the ACME based on treatment status
+
+med.fit <- lm(emo ~ treat + age + educ + gender + income, data=framing)
+
+out.fit <- glm(cong_mesg ~ emo * treat + age + educ + gender + income,
+               data = framing, family = binomial("probit"))
+
+med.out <- mediate(med.fit, out.fit, treat = "treat", mediator = "emo",
+                      robustSE = TRUE, sims = 100)
+
+summary(med.out)
+
+#The statistical significance of the treatment-mediator interaction can be tested
+#via test.TMint function
+
+test.TMint(med.out, conf.level = .95)
+#Here, we do NOT reject the null hypothesis.
+
+#The mediate function's output contains a range of additional quantitites that
+#could be helpful, look at ?mediate for details.
+
+#################
+# Missing Data? #
+#################
+
+#this simulation based approach to estimation of mediation effects allows for
+#users to deal with missing data via standard 'multiple imputation' procedures
+#Our two utility functions, mediations and amelidiate. We simulate our data
+#using imputation software, then we run each data set through mediations
+
+#Next, the output of mediations is run into the amelidiate function, combining
+#components of the output from mediations into a format that can be analyzed
+#with plot and summary commands.
+
+#Note, we can also manually run mediate on the imputed data sets, and 'stack' 
+#the vectors of quantities that they are interested in, and use basic functions
+#like 'quantile' to calculate the CI's
+
+
+#########################
+## Moderated Mediation ##
+#########################
+
+#We can examine moderated mediation! Some analysists hypothesize that the magnitude 
+#of the ACME depends on (is moderated by) a pre-treatment covariate, a moderator.
+#in our 'framing' example, the ACME may be STRONGER amongst older people than
+#younger ones, essentially, the ACME may be moderated by age
+
+#There are two alternative routes to the analysis of moderated mediation
+#First, we can alter the models and syntax in the mediate function.
+
+#We begin by ensuring that the mediator and outcome models contain the 
+#moderator and it's interaction terms wrt the treatment and the mediating variables
+#that are justified in theory. FOR EXAMPLE!
+
+med.fit <- lm(emo ~ treat * age + educ + gender + income, data=framing)
+
+out.fit <- glm(cong_mesg ~ emo + treat * age + emo * age + educ + gender
+               + income, data = framing, family = binomial("probit"))
+
+#Once our two models are fitted, we specify the levels of the moderator
+#at which effects will be calculated by the mediate function.
+
+#e.g. We can set our age covariate to a specific value, FOR EXAMPLE - we can set
+#the value of age to be 20 in one model, and 60 in another!
+
+med.age20 <- mediate(med.fit, out.fit, treat = "treat",
+                     mediator = "emo", covariates = list(age = 20), sims = 100)
+
+med.age60 <- mediate(med.fit, out.fit, treat = "treat",
+                     mediator = "emo", covariates = list(age = 60), sims = 100)
+
+summary(med.age20)
+summary(med.age60)
+
+#We thus now have two different outputs, the first output, the ACME is estimated
+#for those who are 20 years old. The second output applies to those who are 60
+
+
+#The second approach consists of DIRECTLY testing the statistical significance of
+#the difference in the ACME and ADE between two chosen levels of pre-treatment covariates
+#This analysis is conducted via the test.modmed function. 
+
+#For example, we can test whether or not the ACME and ADE significantly differ
+#between the subjects who are 20, and those who are 60
+
+med.init <- mediate(med.fit, out.fit, treat = "treat", mediator = "emo", sims=2)
+
+test.modmed(med.init, covariates.1 = list(age = 20),
+            covariates.2 = list(age = 60), sims = 100)
+
+#Note, here we see that our initial mediate fit doesn't need our 'covariates'
+#argument, and the choice of levels is made in the call to test.modmed itself.
+#ALSO! Our initial mediate call doesn't need many sims, as the calculation
+#for uncertainty happens within the test.modmed function.
+
+
+#################################
+# Nonbinary Treatment Variables #
+#################################
+
+#experimental manipulations can be complicated, our framing example is a 
+#2x2 factorial design (each subj exposed to 2 different binary treatments
+#thus resulting in 4 different manipulations). We focused on a comparison of
+#one condition relative to the other 3, HOWEVER, we can handle something more complex!
+
+#A Non-binary treatment variable.
+#Instead of using the binary 'treat' variable, we use a variable named 'cond'
+#which records which of the 4 conditions subj was exposed to. Using control.value
+#and treat.value options, we can calculate whatever contrast of interest we want.
+
+#FOR EXAMPLE, the comparison between the 2nd and 3rd conditions can be done as below
+
+med.fit <- lm(emo ~ cond + age + educ + gender + income, data = framing)
+
+out.fit <- glm(cong_mesg ~ emo + cond + age + educ + gender + income,
+               data = framing, family = binomial("probit"))
+
+med23.out <- mediate(med.fit, out.fit, treat = "cond", mediator = "emo",
+                     control.value = 2, treat.value = 3, sims = 100)
+
+summary(med23.out)
+
+#We can also compare the 1st and 4th conditions!
+
+med14.out <- mediate(med.fit, out.fit, treat = "cond", mediator = "emo",
+                     control.value = 1, treat.value = 4, sims = 100)
+
+summary(med14.out)
+
+#Nothing changes in our output format, but our contrasts will change depending
+#on categories chosen for comparison by the researcher. For a continous treatment
+#the researcher would specify two values of treatment to make a contrast
+
+#We can define the causal mediation effect for any two levels of our treatment
+#Since the ACME is defined as delta = various values of treatment, we can set
+#control.value and treat.value to t0 and t1 respectively!
+
+#We can also vary the value of t1, while fixing the base value of t0, to see how
+#ACME changes as a function of t1.
+
