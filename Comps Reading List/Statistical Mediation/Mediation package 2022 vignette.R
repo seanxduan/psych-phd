@@ -319,3 +319,128 @@ summary(med14.out)
 #We can also vary the value of t1, while fixing the base value of t0, to see how
 #ACME changes as a function of t1.
 
+
+######################################################
+## Sensitivity Analysis for Sequential Ignorability ##
+######################################################
+
+#Sequential ignorability is a strong assumption, and thus, sensitivity analysis can be
+#a good value! Lets try one using mediation(), to see if we can gauge how likely we are to
+#find unobserved pre-treatment covariates. We can pass the output of mediate to medsens()
+
+#This Computes the values of causal quantitites as a fxn of sensitivity parameters.
+#Both summary and plot functions are available for analysis, and they display the results in 
+#a tablular and graphical form, respectively.
+
+#For EXAMPLE! After runing ACME, we conduct a sensitivity analysis by using medsens
+#Our parameter, rho (the correlation b/w residuals of the mediator and outcome regressions)
+#If there exist unobserved pre-treatment confounders which affect BOTH the mediator and the
+#outcome, we would expect that Rho is NOT zero! The sensitivity analysis is conducted by varying
+#the value of rho and examining how the estimated ACME changes
+
+med.fit <- lm(emo ~ treat + age + educ + gender + income, data = framing)
+
+out.fit <- glm(cong_mesg ~ emo + treat + age + educ + gender + income,
+               data = framing, family = binomial("probit"))
+med.out <- mediate(med.fit, out.fit, treat = "treat", mediator = "emo",
+                   robustSE = TRUE, sims = 100)
+sens.out <- medsens(med.out, rho.by = 0.1, effect.type = "indirect", sims = 100)
+
+summary(sens.out)
+
+#looking at our result, here's what we can say. Rho by .1 sets our rho varying from -.9 to .9
+#in increments of .1, indirect effect type means sensitivity analysis is conducted for ACME
+#We could have effect type = 'direct', performing sensitivity analysis for ADE, and we 
+#can put in 'both' if we want both!
+
+#Our summary function shows the values of rho at which the CI contains zero for ACME
+#The CI's contain zero when rho equals .3 and .4, looking at the other columns
+#our first row captures whrere acme is 0 as a function of proportion of residuals variance
+#in the mediator and outcome explained by an hypothesized unobserved confounder.
+
+#The second line uses total variance instead of residual variance, with R*2 for resid, and
+#R_2 for total var. For example, when the product of the original variacne explained
+#by the omitted confounding is .049, the point estimate for ACME is 0
+
+#We can also use graphics instead, which we can do by passing to plot
+
+plot(sens.out)
+plot(sens.out, sens.par = "R2")
+
+#our graphics can be very easy for sens analysis!
+
+plot(sens.out, sens.par = "rho", main = "Anxiety", ylim = c(-0.2, 0.2))
+
+#We must specify whether the hypothesized confounder affects the mediator and outcome in the
+#same or different directions. This matters because sensitivity anlaysis in terms of
+#the product of rsquared stats. For our currente xample, we can assume same direction
+#by setting sign.prod = "positive" (rather than "negative")
+
+#Plotting our total variacne of our sens analyasis, we see which combinations of Rsquare
+#where our ACME would be 0 (the product equals 0.049)
+
+plot(sens.out, sens.par = "R2", r.type = "total", sign.prod = "positive")
+
+#Causal mediation analysis of Multilevel Data
+
+#we can look at multilevel data via lmer and glmer in lme4 package. Analyzing data w/ individual
+#observations that are clustered within groups. Individual data may be correlated, but different
+#groups have different data generating processes, MLM allows us to take this heterogeneity
+#within and between groups simultaneously.
+
+#We can categorize this analysis into multiple types based on whether treatment, mediator,
+#and outcome variables are measured at the individual and gorup level
+
+#Regardless, researchers can use mediate to analyze by choosing appropriate models for
+#the mediator and outcome variables. We have two examples of data structure here.
+
+# 1: The treatment is assigned at group level, mediator and outcome are measured at
+#the individual level
+
+# 2: Both the treatment and mediator are group-level variables, while the outcome is recorded
+#at the individual level. 
+
+#We look at the education longitiduinal study, w/ students clustered within schools.
+#The student data set contains student and school level vars, organized at the student level.
+#The school dataset has school level vars, which is only needed when we analyze the data
+#where both treatment and mediator are group-level variables.
+
+ 
+ #######################################################
+ # Group-level treatment and individual-level mediator #
+ #######################################################
+
+data("student", package = "mediation")
+
+#we analyze whether a school is Catholic or not, affects likelihood of fighting, and hypo
+#thesize that the mediation is emotional attachment to the school.
+
+#Thus, we postulate that students in Catholic school may have greater sense of attachement
+#to their school, decreasing the likelihood of getting into a fight.
+
+#This is modelled using i and j as student and school indicators, error being normally distributed
+# group level error with mean zero, and Xij is the vector of student-level pre-treatment
+#covariates (gender, income, and pared)
+
+#our binary outcome is modeled with a logistic link, with group level errors jointly
+#allowed to distribute with mean zero. We can estimate this using the glmer function
+
+library(lme4)
+
+med.fit <- glmer(attachment ~ catholic + gender + income + pared + (1|SCH_ID),
+                 family = binomial(link = "logit"), data = student)
+out.fit <- glmer(fight ~ catholic*attachment +
+                   gender + income + pared + (1 + attachment|SCH_ID),
+                 family = binomial(link = "logit"), data = student)
+
+#we can feed these functions into 'mediate' as usually
+
+med.out <- mediate(med.fit, out.fit, treat = "catholic", mediator = "attachment",
+                   sims = 100)
+
+summary(med.out)
+
+#Our estimated mediation, direct, and total effects are all different from zero. The results
+#suggest that school-level treatment (catholic) increase the value of the mediator (attachment)
+#which in turn decreases the value of our outcome (fight), and also our treatment decreases
+#the value of the outcome directly, on a different causal path!
