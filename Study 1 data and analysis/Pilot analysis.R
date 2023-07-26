@@ -31,7 +31,7 @@ v<-c(1/19, 1/7, 1/4, 3/8, 1/2,
      1/19, 4/7, 7/5, 13/9, 8/3,
      11/4, 10/3, 7/2, 17/4, 9/2)
 length(v)
-s_value<-matrix(v, nrow=42, ncol=length(v), byrow=TRUE)
+s_value<-matrix(v, nrow=length(pilot_data), ncol=length(v), byrow=TRUE)
 
 nl_ans<-number_line - s_value
 nl_ans[,11:20]<-(nl_ans[,11:20]/5)
