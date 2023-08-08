@@ -131,7 +131,7 @@ pilot_long_clean<-pilot_long_clean[!ind,]
 
 pilot_long_clean<-pilot_long_clean[,-c(19:20)]
 
-pilot_long_clean<-read.csv("pilot_clean.csv")
+
 pilot_long_clean$condition<-str_replace_all(pilot_long_clean$condition, c("1"= "High", "2" = "Low"))
 
 write.csv(pilot_long_clean,'pilot_clean.csv')
