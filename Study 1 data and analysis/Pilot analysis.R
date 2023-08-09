@@ -63,6 +63,10 @@ summary(m1)
 m2<-lm(UHC ~condition + NLINE + SNS_SCORE + utilitarian + deontological + SILS_1_1, data = pilot)
 summary(m2)
 
+#lets directly see if the feeligns on healthcare are due to utilitarian or deontological reasons
+#how would we measure this?
+#part for our next proposal, lets make it more clear!
+
 #for climate
 m3<-lm(climate ~condition + NLINE + SNS_SCORE + utilitarian + deontological + SILS_1_1, data = pilot)
 summary(m3)
@@ -101,3 +105,23 @@ m7<-lm(UHC_SUP~ Time + condition + NLINE + SNS_SCORE + utilitarian + deontologic
 summary(m7)
 #ok, this should mostly be for looking @ the structure of everything for the purpose
 #of making graphs.
+
+library(ggplot2)
+
+plot1<-ggplot(pilot_model_long, aes(x=Time, y=UHC_SUP, color=condition)) +
+  geom_boxplot() 
+plot1 + facet_wrap(~ condition)+ scale_color_brewer(palette = "Set1")
+
+#nice we see exactly what we want to see :)
+
+plot2<-ggplot(pilot_model_long, aes(x=Time, y=CLIM_SUP, color=condition)) +
+  geom_boxplot() 
+plot2 + facet_wrap(~ condition)+ scale_color_brewer(palette = "Set1")
+
+plot3<-ggplot(pilot_model_long, aes(x=Time, y=DEATH_SUP, color=condition)) +
+  geom_boxplot() 
+plot3 + facet_wrap(~ condition)+ scale_color_brewer(palette = "Set1")
+
+plot4<-ggplot(pilot_model_long, aes(x=Time, y=SLAVE_SUP, color=condition)) +
+  geom_boxplot() 
+plot4 + facet_wrap(~ condition)+ scale_color_brewer(palette = "Set1")
