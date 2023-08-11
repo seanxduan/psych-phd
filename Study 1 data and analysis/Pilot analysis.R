@@ -63,9 +63,25 @@ summary(m1)
 m2<-lm(UHC ~condition + NLINE + SNS_SCORE + utilitarian + deontological + SILS_1_1, data = pilot)
 summary(m2)
 
-#lets directly see if the feeligns on healthcare are due to utilitarian or deontological reasons
+#lets directly see if the feelings on healthcare are due to utilitarian or deontological reasons
 #how would we measure this?
 #part for our next proposal, lets make it more clear!
+
+#lets check... did people with high deon/util orientation JUST have higher initial estimates regardless?
+
+m2_a<-lm(Pre_P2 ~ NLINE + SNS_SCORE + utilitarian + deontological + SILS_1_1, data = pilot)
+summary(m2_a)
+
+#how about the final postscore?
+m2_b<-lm(P2 ~ condition + NLINE + SNS_SCORE + utilitarian + deontological + SILS_1_1, data = pilot)
+summary(m2_b)
+
+#ok, lets try again w/ the difference score?
+m2_c<-lm(UHC ~ condition+ NLINE + SNS_SCORE + utilitarian + deontological + SILS_1_1, data = pilot)
+summary(m2_c)
+
+#
+
 
 #for climate
 m3<-lm(climate ~condition + NLINE + SNS_SCORE + utilitarian + deontological + SILS_1_1, data = pilot)
@@ -113,6 +129,59 @@ plot1<-ggplot(pilot_model_long, aes(x=Time, y=UHC_SUP, color=condition)) +
 plot1 + facet_wrap(~ condition)+ scale_color_brewer(palette = "Set1")
 
 #nice we see exactly what we want to see :)
+
+#lets see how the prescore looks?
+
+plot1_A<-ggplot(pilot, aes(x=utilitarian, y=Pre_P2)) +
+  geom_point() + geom_smooth(method = "lm")
+plot1_A + scale_color_brewer(palette = "Set1")
+
+#how about the difference score?
+
+plot1_B<-ggplot(pilot, aes(x=utilitarian, y=P2)) +
+  geom_point() + geom_smooth(method = "lm")
+plot1_B + scale_color_brewer(palette = "Set1")
+
+#look @ it for deont.
+
+plot1_C<-ggplot(pilot, aes(x=deontological, y=Pre_P2)) +
+  geom_point() + geom_smooth(method = "lm")
+plot1_C + scale_color_brewer(palette = "Set1")
+
+#now lets see total change and deont/util?
+
+plot1_D<-ggplot(pilot, aes(x=deontological, y=UHC)) +
+  geom_point() + geom_smooth(method = "lm")
+plot1_D + scale_color_brewer(palette = "Set1")
+
+plot1_E<-ggplot(pilot, aes(x=deontological, y=UHC)) +
+  geom_point() + geom_smooth(method = "lm")
+plot1_E + facet_wrap(~ condition) + scale_color_brewer(palette = "Set1")
+
+plot1_F<-ggplot(pilot, aes(x=utilitarian, y=UHC)) +
+  geom_point() + geom_smooth(method = "lm")
+plot1_F + facet_wrap(~ condition) + scale_color_brewer(palette = "Set1")
+#SMELLS LIKE AN INTERACTION!!?!?!?!!!
+#in the high social consensus situation, you are relatively less influenced by
+#social pressure, the MORE utilitarian your baseline orientation is (this is NOT what the lit says?!?)
+
+#in the LOW social consensus we do not see an effect of greater utilitarianism.
+
+#so, the more utiltarian you are, the more likely you are to ORIGINALLY support UHC regardless of 
+#anything else
+
+#THUS, if you are likely to support UHC more, you are less likely to be influenced by things
+
+plot1_G<-ggplot(pilot, aes(x=utilitarian, y=P2)) +
+  geom_point() + geom_smooth(method = "lm")
+plot1_G + facet_wrap(~ condition) + scale_color_brewer(palette = "Set1")
+
+plot1_H<-ggplot(pilot, aes(x=utilitarian, y=Pre_P2)) +
+  geom_point() + geom_smooth(method = "lm")
+plot1_H + facet_wrap(~ condition) + scale_color_brewer(palette = "Set1")
+
+##### Is it plausible that we're hitting a ceiling effect?
+#e.g. for those that support UHC, our intervention doesn't do very much?
 
 plot2<-ggplot(pilot_model_long, aes(x=Time, y=CLIM_SUP, color=condition)) +
   geom_boxplot() 
