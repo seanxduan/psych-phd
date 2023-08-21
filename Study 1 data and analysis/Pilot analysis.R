@@ -136,7 +136,7 @@ plot1_A<-ggplot(pilot, aes(x=utilitarian, y=Pre_P2)) +
   geom_point() + geom_smooth(method = "lm")
 plot1_A + scale_color_brewer(palette = "Set1")
 
-#how about the difference score?
+#how about the final score?
 
 plot1_B<-ggplot(pilot, aes(x=utilitarian, y=P2)) +
   geom_point() + geom_smooth(method = "lm")
@@ -144,7 +144,7 @@ plot1_B + scale_color_brewer(palette = "Set1")
 
 #look @ it for deont.
 
-plot1_C<-ggplot(pilot, aes(x=deontological, y=Pre_P2)) +
+plot1_C<-ggplot(pilot, aes(x=deontological, y=P2)) +
   geom_point() + geom_smooth(method = "lm")
 plot1_C + scale_color_brewer(palette = "Set1")
 
