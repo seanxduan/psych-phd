@@ -62,6 +62,10 @@ summary(m1)
 #for UHC
 m2<-lm(UHC ~condition + NLINE + SNS_SCORE + utilitarian + deontological + SILS_1_1, data = pilot)
 summary(m2)
+#interxn
+m2<-lm(UHC ~condition*utilitarian + NLINE + SNS_SCORE + deontological+ SILS_1_1, data = pilot)
+summary(m2)
+#no fx of interaction!
 
 #lets directly see if the feelings on healthcare are due to utilitarian or deontological reasons
 #how would we measure this?
