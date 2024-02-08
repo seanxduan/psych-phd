@@ -63,7 +63,7 @@ summary(m1)
 m2<-lm(UHC ~condition + NLINE + SNS_SCORE + utilitarian + deontological + SILS_1_1, data = pilot)
 summary(m2)
 #interxn
-m2<-lm(UHC ~condition*utilitarian + NLINE + SNS_SCORE + deontological+ SILS_1_1, data = pilot)
+m2<-lm(UHC ~condition*utilitarian + NLINE + SNS_SCORE + condition*deontological+ SILS_1_1, data = pilot)
 summary(m2)
 #no fx of interaction!
 
@@ -128,9 +128,17 @@ summary(m7)
 
 library(ggplot2)
 
-plot1<-ggplot(pilot_model_long, aes(x=Time, y=UHC_SUP, color=condition)) +
-  geom_boxplot() 
-plot1 + facet_wrap(~ condition)+ scale_color_brewer(palette = "Set1")
+plot1<-ggplot(pilot_model_long, aes(x=condition, y=UHC_SUP, color=condition)) +
+  geom_boxplot() + 
+  labs(
+    x = "Social Consensus Condition", 
+    y = "Support for Universal Health Care", 
+    colour = "Social Consensus Condition",
+    title = "Effect of Social Consensus on Support for Universal Health Care",
+    subtitle = "Social consensus has significant effect on support for UHC"
+  )
+plot1 + facet_wrap(~ Time)+ scale_color_brewer(palette = "Set1")
+
 
 #nice we see exactly what we want to see :)
 
@@ -160,11 +168,24 @@ plot1_D + scale_color_brewer(palette = "Set1")
 
 plot1_E<-ggplot(pilot, aes(x=deontological, y=UHC)) +
   geom_point() + geom_smooth(method = "lm")
-plot1_E + facet_wrap(~ condition) + scale_color_brewer(palette = "Set1")
+plot1_E + facet_wrap(~ condition) + scale_color_brewer(palette = "Set1")+ 
+  labs(
+    x = "Deontological Orientation", 
+    y = "Support for Universal Health Care", 
+    title = "Effect of Deontological Orientation on Change in Support for Universal Health Care by Social Consensus Condition",
+    subtitle = "There is no significant interaction between deontological leaning and condition"
+  )
 
 plot1_F<-ggplot(pilot, aes(x=utilitarian, y=UHC)) +
   geom_point() + geom_smooth(method = "lm")
-plot1_F + facet_wrap(~ condition) + scale_color_brewer(palette = "Set1")
+plot1_F + facet_wrap(~ condition) + scale_color_brewer(palette = "Set1")+ 
+  labs(
+    x = "Utilitarian Orientation", 
+    y = "Support for Universal Health Care", 
+    title = "Effect of Utilitarian Orientation on Change in Support for Universal Health Care by Social Consensus Condition",
+    subtitle = "There is a significant interaction between utilitarian leaning and condition"
+  )
+
 #SMELLS LIKE AN INTERACTION!!?!?!?!!!
 #in the high social consensus situation, you are relatively less influenced by
 #social pressure, the MORE utilitarian your baseline orientation is (this is NOT what the lit says?!?)
@@ -182,19 +203,181 @@ plot1_G + facet_wrap(~ condition) + scale_color_brewer(palette = "Set1")
 
 plot1_H<-ggplot(pilot, aes(x=utilitarian, y=Pre_P2)) +
   geom_point() + geom_smooth(method = "lm")
-plot1_H + facet_wrap(~ condition) + scale_color_brewer(palette = "Set1")
+plot1_H + 
+  labs(
+    x = "Utilitarian Orientation", 
+    y = "Support for Universal Health Care", 
+    title = "Effect of Utilitarian Orientation on Initial Support for Universal Health Care",
+    subtitle = "Utilitarian leaning predicts initial support for UHC"
+  )
+
+plot1_H2<-ggplot(pilot, aes(x=deontological, y=Pre_P2)) +
+  geom_point() + geom_smooth(method = "lm")
+plot1_H2 + 
+  labs(
+    x = "Deontological Orientation", 
+    y = "Support for Universal Health Care", 
+    title = "Effect of Deontological Orientation on Initial Support for Universal Health Care",
+    subtitle = "Deontological leaning predicts initial support for UHC"
+  )
 
 ##### Is it plausible that we're hitting a ceiling effect?
 #e.g. for those that support UHC, our intervention doesn't do very much?
 
-plot2<-ggplot(pilot_model_long, aes(x=Time, y=CLIM_SUP, color=condition)) +
+plot2<-ggplot(pilot_model_long, aes(x=condition, y=CLIM_SUP, color=condition)) +
   geom_boxplot() 
-plot2 + facet_wrap(~ condition)+ scale_color_brewer(palette = "Set1")
+plot2 + facet_wrap(~ Time)+ scale_color_brewer(palette = "Set1") + 
+  labs(
+    x = "Social Consensus Condition", 
+    y = "Support for Anthropoegenic Climate Change", 
+    colour = "Social Consensus Condition",
+    title = "Effect of Social Consensus on Support for Anthropoegenic Climate Change",
+    subtitle = "Social consensus has no effect on support for Anthropoegenic Climate Change"
+  )
+plot2_E<-ggplot(pilot, aes(x=deontological, y=climate)) +
+  geom_point() + geom_smooth(method = "lm")
+plot2_E + facet_wrap(~ condition) + scale_color_brewer(palette = "Set1")+ 
+  labs(
+    x = "Deontological Orientation", 
+    y = "Support for Anthropoegenic Climate Change", 
+    title = "Effect of Deontological Orientation on Change in Support for Anthropoegenic Climate Change by Social Consensus Condition",
+    subtitle = "There is no significant interaction between deontological leaning and condition"
+  )
 
-plot3<-ggplot(pilot_model_long, aes(x=Time, y=DEATH_SUP, color=condition)) +
-  geom_boxplot() 
-plot3 + facet_wrap(~ condition)+ scale_color_brewer(palette = "Set1")
+plot2_F<-ggplot(pilot, aes(x=utilitarian, y=climate)) +
+  geom_point() + geom_smooth(method = "lm")
+plot2_F + facet_wrap(~ condition) + scale_color_brewer(palette = "Set1")+ 
+  labs(
+    x = "Utilitarian Orientation", 
+    y = "Support for Anthropoegenic Climate Change", 
+    title = "Effect of Utilitarian Orientation on Change in Support for Anthropoegenic Climate Change by Social Consensus Condition",
+    subtitle = "There is a significant interaction between Utilitarian leaning and condition"
+  )
 
-plot4<-ggplot(pilot_model_long, aes(x=Time, y=SLAVE_SUP, color=condition)) +
+plot2_H<-ggplot(pilot, aes(x=utilitarian, y=Pre_P1)) +
+  geom_point() + geom_smooth(method = "lm")
+plot2_H + 
+  labs(
+    x = "Utilitarian Orientation", 
+    y = "Support for Anthropoegenic Climate Change", 
+    title = "Effect of Utilitarian Orientation on Initial Support for Anthropoegenic Climate Change",
+    subtitle = "Utilitarian leaning predicts initial support for Anthropoegenic Climate Change"
+  )
+
+plot2_H2<-ggplot(pilot, aes(x=deontological, y=Pre_P1)) +
+  geom_point() + geom_smooth(method = "lm")
+plot2_H2 + 
+  labs(
+    x = "Deontological Orientation", 
+    y = "Support for Anthropoegenic Climate Change", 
+    title = "Effect of Deontological Orientation on Initial Support for Anthropoegenic Climate Change",
+    subtitle = "Deontological leaning predicts initial support for Anthropoegenic Climate Change"
+  )
+
+###################
+
+plot3<-ggplot(pilot_model_long, aes(x=condition, y=DEATH_SUP, color=condition)) +
   geom_boxplot() 
-plot4 + facet_wrap(~ condition)+ scale_color_brewer(palette = "Set1")
+plot3 + facet_wrap(~ Time)+ scale_color_brewer(palette = "Set1")+ 
+  labs(
+    x = "Social Consensus Condition", 
+    y = "Support for Capital Punishment", 
+    colour = "Social Consensus Condition",
+    title = "Effect of Social Consensus on Support for Capital Punishment",
+    subtitle = "Social consensus has a significant effect on support for Capital Punishment"
+  )
+
+
+
+plot3_H<-ggplot(pilot, aes(x=utilitarian, y=Pre_P3)) +
+  geom_point() + geom_smooth(method = "lm")
+plot3_H + 
+  labs(
+    x = "Utilitarian Orientation", 
+    y = "Support for Capital Punishment", 
+    title = "Effect of Utilitarian Orientation on Initial Support for Capital Punishment",
+    subtitle = "Utilitarian leaning predicts initial support for Capital Punishment"
+  )
+
+plot3_H2<-ggplot(pilot, aes(x=deontological, y=Pre_P3)) +
+  geom_point() + geom_smooth(method = "lm")
+plot3_H2 + 
+  labs(
+    x = "Deontological Orientation", 
+    y = "Support for Capital Punishment", 
+    title = "Effect of Deontological Orientation on Initial Support for Capital Punishment",
+    subtitle = "Deontological leaning predicts initial support for Capital Punishment"
+  )
+
+plot3_E<-ggplot(pilot, aes(x=deontological, y=death)) +
+  geom_point() + geom_smooth(method = "lm")
+plot3_E + facet_wrap(~ condition) + scale_color_brewer(palette = "Set1")+ 
+  labs(
+    x = "Deontological Orientation", 
+    y = "Support for Capital Punishment", 
+    title = "Effect of Deontological Orientation on Change in Support for Capital Punishment by Social Consensus Condition",
+    subtitle = "There is no significant interaction between deontological leaning and condition"
+  )
+
+plot3_F<-ggplot(pilot, aes(x=utilitarian, y=death)) +
+  geom_point() + geom_smooth(method = "lm")
+plot3_F + facet_wrap(~ condition) + scale_color_brewer(palette = "Set1")+ 
+  labs(
+    x = "Utilitarian Orientation", 
+    y = "Support for Anthropoegenic Climate Change", 
+    title = "Effect of Utilitarian Orientation on Change in Support for Capital Punishment by Social Consensus Condition",
+    subtitle = "There is a significant interaction between Utilitarian leaning and condition"
+  )
+
+###################
+
+
+plot4<-ggplot(pilot_model_long, aes(x=condition, y=SLAVE_SUP, color=condition)) +
+  geom_boxplot() 
+plot4 + facet_wrap(~ Time)+ scale_color_brewer(palette = "Set1")+ 
+  labs(
+    x = "Social Consensus Condition", 
+    y = "Support for Slavery", 
+    colour = "Social Consensus Condition",
+    title = "Effect of Being in a Social Consensus Condition manipulating other topics on Support for Slavery",
+    subtitle = "Social consensus was not directly manipulated for Slavery"
+  )
+plot4_H<-ggplot(pilot, aes(x=utilitarian, y=Pre_P4)) +
+  geom_point() + geom_smooth(method = "lm")
+plot4_H + 
+  labs(
+    x = "Utilitarian Orientation", 
+    y = "Support for Slavery", 
+    title = "Effect of Utilitarian Orientation on Initial Support for Slavery",
+    subtitle = "Utilitarian leaning predicts initial support for Capital Punishment"
+  )
+
+plot4_H2<-ggplot(pilot, aes(x=deontological, y=Pre_P4)) +
+  geom_point() + geom_smooth(method = "lm")
+plot4_H2 + 
+  labs(
+    x = "Deontological Orientation", 
+    y = "Support for Slavery", 
+    title = "Effect of Deontological Orientation on Initial Support for Slavery",
+    subtitle = "Deontological leaning does not predict initial support for Slavery"
+  )
+
+plot4_E<-ggplot(pilot, aes(x=deontological, y=slave)) +
+  geom_point() + geom_smooth(method = "lm")
+plot4_E + facet_wrap(~ condition) + scale_color_brewer(palette = "Set1")+ 
+  labs(
+    x = "Deontological Orientation", 
+    y = "Support for Slavery", 
+    title = "Effect of Deontological Orientation on Change in Support for Slavery by Social Consensus Condition",
+    subtitle = "There is no significant interaction between deontological leaning and condition"
+  )
+
+plot4_F<-ggplot(pilot, aes(x=utilitarian, y=slave)) +
+  geom_point() + geom_smooth(method = "lm")
+plot4_F + facet_wrap(~ condition) + scale_color_brewer(palette = "Set1")+ 
+  labs(
+    x = "Utilitarian Orientation", 
+    y = "Support for Slavery", 
+    title = "Effect of Utilitarian Orientation on Change in Support for Slavery by Social Consensus Condition",
+    subtitle = "There is no significant interaction between Utilitarian leaning and condition"
+  )
