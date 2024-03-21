@@ -11,7 +11,6 @@ library("gtsummary")
 
 #peel out only the demographic info?
 d1<-pilot[,c(23,40:43)]
-#lets get condition set-up properly as well lol
 
 
 d1 %>%

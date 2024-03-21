@@ -11,8 +11,28 @@ library("gtsummary")
 
 #peel out only the demographic info?
 d1<-pilot[,c(23,40:43)]
-#lets get condition set-up properly as well lol
 
+#lets get condition set-up properly as well lol
+#re-naming because we only got number values - so we can print our table
+d1 <- d1 %>%
+  mutate(Gender = recode(Gender, "1" = 'Male', "2" = 'Female', "3" =  'Gender Variant' ))
+d1 <- d1 %>%
+  mutate(Race = recode(Race, "1" = 'White', "2" = 'Black', "3" =  'Asian',"4" = "Native American", "5" = "Hispanic", "6" = "Other",
+                       "1,2" =  'White/Black', "1,4" = "White/Native American" ,
+                       "1,3" =  'White/Asian', "1,5" = "White/Hispanic",
+                       "1,6" =  'White/Other', "2,5" = "Black/Hispanic",
+                       "1,2,5" =  'White/Black/Hispanic', "5,6" = "Hispanic/Other"))
+# just clumping as other
+d1 <- d1 %>%
+  mutate(Race = recode(Race, "1" = 'White', "2" = 'Black', "3" =  'Asian',"4" = "Native American", "5" = "Hispanic", "6" = "Other",
+                       "1,2" =  'White/Black', "1,4" = "Other" ,
+                       "1,3" =  'White/Asian', "1,5" = "White/Hispanic",
+                       "1,6" =  'Other', "2,5" = "Other",
+                       "1,2,5" =  'Other', "5,6" = "Other"))
+
+d1 <- d1 %>%
+  mutate(School_Year = recode(School_Year, "1" = 'Freshman', "2" = 'Sophmore', '3' =  'Junior',
+                              "4" = 'Senior', "5" = 'Other'))
 
 d1 %>%
   tbl_summary(
@@ -127,6 +147,44 @@ summary(m7)
 #of making graphs.
 
 library(ggplot2)
+### material for making tables for our results sections
+library(texreg)
+texreg(m7, custom.model.names = "Multi Level Model - Intercept Varies by Subject",
+       custom.coef.names = c(),
+       caption = "Frequentist Table of Intervention on UHC Support", label = "tab:freq-table1",
+       ci.force = TRUE)
+# this is fine for... rmarkdown, since we're bodging it in word tho... lets try something else
+install.packages("modelsummary")
+library(modelsummary)
+library(webshot2)
+modelsummary(m7)
+#oh nice we can use lists of our outputs and then use that to codge together a nice set of tables!
+
+#uhc pros
+m2<-lm(UHC ~condition + NLINE + SNS_SCORE + utilitarian + deontological + SILS_1_1, data = pilot)
+#for climate
+m3<-lm(climate ~condition + NLINE + SNS_SCORE + utilitarian + deontological + SILS_1_1, data = pilot)
+#for death?
+m4<-lm(death ~condition + NLINE + SNS_SCORE + utilitarian + deontological + SILS_1_1, data = pilot)
+#for slavery?
+m5<-lm(slave ~condition + NLINE + SNS_SCORE + utilitarian + deontological + SILS_1_1, data = pilot)
+
+models <- list(
+  "UHC"     = lm(UHC ~condition + NLINE + SNS_SCORE + utilitarian + deontological + SILS_1_1, data = pilot),
+  "Climate" = lm(climate ~condition + NLINE + SNS_SCORE + utilitarian + deontological + SILS_1_1, data = pilot),
+  "Death"   = lm(death ~condition + NLINE + SNS_SCORE + utilitarian + deontological + SILS_1_1, data = pilot),
+  "Slavery" = lm(slave ~condition + NLINE + SNS_SCORE + utilitarian + deontological + SILS_1_1, data = pilot)
+)
+modelsummary(models, stars = TRUE, title = 'Effect of Social Consensus and Individual Differences on Highly Polarized Beliefs',
+             coef_rename = c("conditionLow" = "Low Social Consensus",
+                                                  "NLINE" = "Objective Numeracy",
+                                                  "SNS_SCORE" = "Subjective Numeracy",
+                                                  "utilitarian" = "Utilitarian Orientation",
+                                                  "deontological" = "Deontological Orentation",
+                                                  "SILS_1_1" = "Health Literacy"),
+             output = "consensus.png")
+
+###
 
 plot1<-ggplot(pilot_model_long, aes(x=condition, y=UHC_SUP, color=condition)) +
   geom_boxplot() + 
