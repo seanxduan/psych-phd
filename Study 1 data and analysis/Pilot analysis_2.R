@@ -169,6 +169,25 @@ m4<-lm(death ~condition + NLINE + SNS_SCORE + utilitarian + deontological + SILS
 #for slavery?
 m5<-lm(slave ~condition + NLINE + SNS_SCORE + utilitarian + deontological + SILS_1_1, data = pilot)
 
+#some code so we can calculate mean and SD of subsets lmao
+pilot_predata <- pilot_model_long[which(pilot_model_long$condition=='High'& pilot_model_long$Time=='pre'),]
+pilot_postdata <- pilot_model_long[which(pilot_model_long$condition=='High'& pilot_model_long$Time=='post'),]
+
+mean(pilot_predata$UHC_SUP)
+sd(pilot_predata$UHC_SUP)
+mean(pilot_postdata$UHC_SUP)
+sd(pilot_postdata$UHC_SUP)
+
+mean(pilot_predata$DEATH_SUP)
+sd(pilot_predata$DEATH_SUP)
+mean(pilot_postdata$DEATH_SUP)
+sd(pilot_postdata$DEATH_SUP)
+
+mean(pilot_predata$CLIMATE_SUP)
+sd(pilot_predata$DEATH_SUP)
+mean(pilot_postdata$DEATH_SUP)
+sd(pilot_postdata$DEATH_SUP)
+
 models <- list(
   "UHC"     = lm(UHC ~condition + NLINE + SNS_SCORE + utilitarian + deontological + SILS_1_1, data = pilot),
   "Climate" = lm(climate ~condition + NLINE + SNS_SCORE + utilitarian + deontological + SILS_1_1, data = pilot),
