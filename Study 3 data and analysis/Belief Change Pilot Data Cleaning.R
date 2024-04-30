@@ -248,6 +248,12 @@ pilot_long_clean$condition<-str_replace_all(pilot_long_clean$condition, c("1"= "
                                                                           , "3" = "Pragmatic", "4" = "Hedonic"
                                                                           , "5" = "Control"))
 
+#whoops have to reverse score item 2 WHOOPS
+pilot_long_clean[,7]<-(0-pilot_long_clean[,7])
+pilot_long_clean[,17]<-(0-pilot_long_clean[,7])
+pilot_long_clean[,27]<-(0-pilot_long_clean[,7])
+pilot_long_clean[,37]<-(0-pilot_long_clean[,7])
+
 #summarize the aggregate measures
 pilot_long_clean$uhc_moral_c<-rowMeans(pilot_long_clean[,6:12])
 pilot_long_clean$death_moral_c<-rowMeans(pilot_long_clean[,16:22])

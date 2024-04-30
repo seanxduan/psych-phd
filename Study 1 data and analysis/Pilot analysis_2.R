@@ -183,10 +183,10 @@ sd(pilot_predata$DEATH_SUP)
 mean(pilot_postdata$DEATH_SUP)
 sd(pilot_postdata$DEATH_SUP)
 
-mean(pilot_predata$CLIMATE_SUP)
-sd(pilot_predata$DEATH_SUP)
-mean(pilot_postdata$DEATH_SUP)
-sd(pilot_postdata$DEATH_SUP)
+mean(pilot_predata$CLIM_SUP)
+sd(pilot_predata$CLIM_SUP)
+mean(pilot_postdata$CLIM_SUP)
+sd(pilot_postdata$CLIM_SUP)
 
 models <- list(
   "UHC"     = lm(UHC ~condition + NLINE + SNS_SCORE + utilitarian + deontological + SILS_1_1, data = pilot),
