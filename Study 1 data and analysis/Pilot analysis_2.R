@@ -458,3 +458,40 @@ plot4_F + facet_wrap(~ condition) + scale_color_brewer(palette = "Set1")+
     title = "Effect of Utilitarian Orientation on Change in Support for Slavery by Social Consensus Condition",
     subtitle = "There is no significant interaction between Utilitarian leaning and condition"
   )
+
+
+## some loose ideas for our ideal gfx
+#lets try scatterplot w/ a regression line, colors by condition, left is pre right is post
+plot3<-ggplot(pilot_model_long, aes(x=condition, y=DEATH_SUP, color=condition)) +
+  geom_boxplot() 
+plot3 + facet_wrap(~ Time)+ scale_color_brewer(palette = "Set1")+ 
+  labs(
+    x = "Social Consensus Condition", 
+    y = "Support for Capital Punishment", 
+    colour = "Social Consensus Condition",
+    title = "Effect of Social Consensus on Support for Capital Punishment",
+    subtitle = "Social consensus has a significant effect on support for Capital Punishment"
+  )
+
+list(pilot_model_long$Time)
+levels(pilot_model_long$Time)
+#fiddle with levels, post on right, pre on left
+
+pilot_model_long$Time<-relevel(pilot_model_long$Time, "pre")
+#orders our level correctly
+
+fplot_xlabs<-c("Pre-Intervention", "Post-Intervention")
+#creates our new x-tick labels
+
+fplot<-ggplot(pilot_model_long, aes(x=Time, y=DEATH_SUP, color=condition))+ geom_point(alpha =.3, position = position_jitter(width=.07))
+
+fplot+geom_smooth(method = lm, alpha=.2, aes(group = condition))+ scale_color_manual(values=c("purple", "black"))+ 
+  labs(
+    x = "Time", 
+    y = "Support for Capital Punishment", 
+    colour = "Social Consensus Condition",
+    title = "Effect of Social Consensus Intervention on Support for Capital Punishment",
+    subtitle = "Perception of increased social consensus correlates with increased support"
+  ) + scale_x_discrete(labels = fplot_xlabs) + theme_bw()
+
+#really great graph showing the effect of our intervention!

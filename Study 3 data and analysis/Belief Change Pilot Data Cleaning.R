@@ -1,6 +1,6 @@
 #basic data, analysis, and prep, for our 'pilot/study 1' data!
 
-pilot<-read.csv("Study 3 data and analysis/Belief+Change+Manipulation+Pilot+-+Spring+2023_April+17,+2024_14.41.csv")
+pilot<-read.csv("Study 3 data and analysis/Belief+Change+Manipulation+Pilot+-+Spring+2023_May+20,+2024_16.28.csv")
 
 #remove two 'blank' rows of data
 pilot_data<-pilot[-c(1,2),]
