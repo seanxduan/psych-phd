@@ -169,3 +169,62 @@ plot4d<-ggplot(pilot, aes(x=condition, y=climate_support, color=condition)) +
   )
 plot4d + scale_color_brewer(palette = "Set1")
 
+
+#we can assess pre-planned pairwise comparisons using contrast coding
+#first, ensure that R sees our conditions as factors
+pilot$condition<-as.factor(pilot$condition)
+levels(pilot$condition)
+#making contrasts
+contrasts <- rbind(
+  "Control vs. Hedonic+Pragmatic" = c(1, -1/2, 0, 0, -1/2),
+  "Control vs Moral Conditions" = c(1, 0, -1/2, -1/2, 0),
+  "H+P vs Moral Conditions" = c(0, 1/2, -1/2,-1/2, 1/2)
+)
+
+#for UHC
+
+#fit a VERY basic model
+model <- lm(uhc_moral_c ~ factor(condition), data = pilot)
+
+#get emms
+library(emmeans)
+emm<-emmeans(model, ~factor(condition))
+
+contrasts <- list(
+  "Control vs. Hedonic+Pragmatic" = c(1, -1/2, 0, 0, -1/2),
+  "Control vs Moral Conditions" = c(1, 0, -1/2, -1/2, 0),
+  "H+P vs Moral Conditions" = c(0, 1/2, -1/2,-1/2, 1/2)
+)
+#make longer list of contrasts to compare against?
+contrasts <- list(
+  "Control vs. Hedonic" = c(1, -1/2, 0, 0, -1/2),
+  "Control vs Moral Conditions" = c(1, 0, -1/2, -1/2, 0),
+  "H+P vs Moral Conditions" = c(0, 1/2, -1/2,-1/2, 1/2)
+)
+########## type up more stuff later
+
+contrast(emm, contrasts, adjust = "bonferroni")
+
+#try again with death penalty
+model <- lm(death_moral_c ~ factor(condition), data = pilot)
+#get emms
+emm<-emmeans(model, ~factor(condition))
+contrast(emm, contrasts, adjust = "bonferroni")
+
+#try again with exercise
+model <- lm(exercise_moral_c ~ factor(condition), data = pilot)
+#get emms
+emm<-emmeans(model, ~factor(condition))
+contrast(emm, contrasts, adjust = "bonferroni")
+
+#try finally w/ climate change
+model <- lm(climate_moral_c ~ factor(condition), data = pilot)
+#get emms
+emm<-emmeans(model, ~factor(condition))
+contrast(emm, contrasts, adjust = "bonferroni")
+
+#looks like the grouped contrasts are NOT IT - however... we can assess individual condition differences
+#compared against control as well.
+
+#needing to make our tables for our pre-planned pairwise comparisions
+pairwise.t.test(pilot$uhc_moral_c, pilot$condition)
