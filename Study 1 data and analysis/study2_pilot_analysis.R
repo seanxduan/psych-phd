@@ -190,17 +190,19 @@ model <- lm(uhc_moral_c ~ factor(condition), data = pilot)
 library(emmeans)
 emm<-emmeans(model, ~factor(condition))
 
+
 contrasts <- list(
   "Control vs. Hedonic+Pragmatic" = c(1, -1/2, 0, 0, -1/2),
   "Control vs Moral Conditions" = c(1, 0, -1/2, -1/2, 0),
   "H+P vs Moral Conditions" = c(0, 1/2, -1/2,-1/2, 1/2)
 )
 #make longer list of contrasts to compare against?
+levels(pilot$condition)
 contrasts <- list(
-  "Control vs. Hedonic" = c(1, -1/2, 0, 0, -1/2),
-  "Control vs Moral Conditions" = c(1, 0, -1/2, -1/2, 0),
-  "H+P vs Moral Conditions" = c(0, 1/2, -1/2,-1/2, 1/2)
-)
+  "Control vs. Hedonic" = c(1, -1, 0, 0, 0),
+  "Control vs Moral Piggybacking" = c(1, 0, -1, 0, 0),
+  "Control vs Moral Responsibility" = c(1, 0, 0,-1, 0),
+  "Control vs Pragmatic" = c(1, 0, 0, 0, -1))
 ########## type up more stuff later
 
 contrast(emm, contrasts, adjust = "bonferroni")
