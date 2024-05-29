@@ -495,3 +495,41 @@ fplot+geom_smooth(method = lm, alpha=.2, aes(group = condition))+ scale_color_ma
   ) + scale_x_discrete(labels = fplot_xlabs) + theme_bw()
 
 #really great graph showing the effect of our intervention!
+
+
+#getting things set up so we can directly test the time x interaction condition ... which we didn't do originally
+#whoops!
+
+ix1_m<-lm(UHC_SUP~ Time * condition + NLINE + SNS_SCORE + utilitarian + deontological + SILS_1_1, data = pilot_model_long)
+summary(ix1_m)
+
+ix2_m<-lm(CLIM_SUP~ Time * condition + NLINE + SNS_SCORE + utilitarian + deontological + SILS_1_1, data = pilot_model_long)
+summary(ix2_m)
+
+ix3_m<-lm(DEATH_SUP~ Time * condition + NLINE + SNS_SCORE + utilitarian + deontological + SILS_1_1, data = pilot_model_long)
+summary(ix3_m)
+
+ix4_m<-lm(SLAVE_SUP~ Time * condition + NLINE + SNS_SCORE + utilitarian + deontological + SILS_1_1, data = pilot_model_long)
+summary(ix4_m)
+
+
+#subset data for our tables
+pre_low<-subset(pilot_model_long, condition == 'Low' & Time == 'pre')
+mean(pre_low$UHC_SUP)
+sd(pre_low$UHC_SUP)
+
+mean(pre_low$DEATH_SUP)
+sd(pre_low$DEATH_SUP)
+
+mean(pre_low$CLIM_SUP)
+sd(pre_low$CLIM_SUP)
+
+post_low<-subset(pilot_model_long, condition == 'Low' & Time == 'post')
+mean(post_low$UHC_SUP)
+sd(post_low$UHC_SUP)
+
+mean(post_low$DEATH_SUP)
+sd(post_low$DEATH_SUP)
+
+mean(post_low$CLIM_SUP)
+sd(post_low$CLIM_SUP)
