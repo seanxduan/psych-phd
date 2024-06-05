@@ -169,6 +169,151 @@ plot4d<-ggplot(pilot, aes(x=condition, y=climate_support, color=condition)) +
   )
 plot4d + scale_color_brewer(palette = "Set1")
 
+##################
+## ANCOVA CHECK ##
+##################
+# Cloning some earlier code on running an ANCOVA analysis, indicating that there is indeed
+# a significant effect of condition on support for [topic] controlling for 
+# [conviction?] or [openness to belief change] 
+
+# Likewise, see if there's significant effect of condition on [moral conviction]
+# controlling for [support] and [openness to belief change]
+
+library(dplyr)
+
+# UHC
+anc_supp_uhc <- aov(uhc_support ~ condition * uhc_belief_c, data = pilot)
+summary(anc_supp_uhc)
+# differences in openess to belief change = support for UHC
+anc_conv_uhc <- aov(uhc_moral_c ~ condition + uhc_belief_c, data = pilot)
+summary(anc_conv_uhc)
+# no seeming differences in conviction by condition moderated by belief change
+
+# death penalty
+anc_supp_death <- aov(death_support ~ condition + death_belief_c, data = pilot)
+summary(anc_supp_death)
+anc_conv_death <- aov(death_moral_c ~ condition + death_belief_c, data = pilot)
+summary(anc_conv_death)
+#no differences RE: death penalty
+
+anc_supp_climate <- aov(climate_support ~ condition + climate_belief_c, data = pilot)
+summary(anc_supp_climate)
+anc_conv_climate <- aov(climate_moral_c ~ condition * climate_belief_c, data = pilot)
+summary(anc_conv_climate)
+#differences in moral conviction change based on opennness to belief change!
+
+
+anc_supp_exercise <- aov(exercise_support ~ condition + exercise_belief_c, data = pilot)
+summary(anc_supp_exercise)
+# differences in openess to belief change = support for exercise!!
+anc_conv_exercise <- aov(exercise_moral_c ~ condition + exercise_belief_c, data = pilot)
+summary(anc_conv_exercise)
+#no changes in moral conviction
+
+#we see belief change affect differences in support for UHC and Exercise
+## interaction is NOT significant for exercise belief change x condition
+## however... interaction IS significant for uhc belief change x condition
+
+#we see belief change affect differences in moral conviction change as well for climate
+## interaction is NOT significant for climate belief change x condition
+
+#thus... given that this assumption is violated, we re-examine using a multiple regression model instead
+
+#UHC
+lm_supp_uhc<-lm(uhc_support ~ condition * uhc_belief_c, data = pilot)
+summary(lm_supp_uhc)
+#significant effect of openness to belief change
+#significant effect of 'pragmatic condition'
+#significant intrxn of belief change and piggybacking, moral responsibility, and pragmatic
+lm_conv_uhc<-lm(uhc_moral_c ~ condition * uhc_belief_c, data = pilot)
+summary(lm_conv_uhc)
+#significant effect of 'pragmatic condition'
+#significant intrxn of belief change and piggybacking and pragmatic
+
+#Death Penalty
+lm_supp_death<-lm(death_support ~ condition * death_belief_c, data = pilot)
+summary(lm_supp_death)
+#no significant effects of condition or belief change openness
+lm_conv_death<-lm(death_moral_c ~ condition * death_belief_c, data = pilot)
+summary(lm_conv_death)
+#no significant effects of condition or belief change openness
+
+
+#Climate
+lm_supp_climate<-lm(climate_support ~ condition * climate_belief_c, data = pilot)
+summary(lm_supp_climate)
+#significant intrxn of belief change and hedonic condition
+lm_conv_climate<-lm(climate_moral_c ~ condition * climate_belief_c, data = pilot)
+summary(lm_conv_climate)
+#significant intrxn of belief change and piggybacking/pragmatic
+
+
+#Exercise
+lm_supp_exercise<-lm(exercise_support ~ condition * exercise_belief_c, data = pilot)
+summary(lm_supp_exercise)
+#significant effect of 'moral piggybacking'
+lm_conv_exercise<-lm(exercise_moral_c ~ condition * exercise_belief_c, data = pilot)
+summary(lm_conv_exercise)
+#no significant effects
+
+#should we check as an exploratory measure, differences in baseline
+#openness to belief change/baseline conviction by type of exercise?
+## create a data subset to do this
+pilot_baselines<-pilot[,c(4,14,24,34,44:47)]
+pilot_baselines$ID<-1:length(pilot_baselines$uhc_belief_c)
+#reshape wide to long
+library(tidyr)
+pilot_base_compare1 <-pivot_longer(pilot_baselines, cols=1:4, names_to ="topic", values_to = "value")
+pilot_base_compare2 <-pivot_longer(pilot_baselines, cols=5:8, names_to ="topic", values_to = "value")
+
+#for belief change
+res.aov <- aov(value ~ topic, data = pilot_base_compare1)
+summary(res.aov)
+# yes, each topic has differing levels of baseline openness to belief change
+# lets throw up a basic graph showing these differences?
+baseline_belief_c<-ggplot(pilot_base_compare1, aes(x=topic, y=value, color=topic))
+#labels for the x-axis
+
+baseline_xlabs<-c("Climate Change", "Capital Punishment", "Exercise", "Universal Health Care")
+baseline_belief_c+geom_boxplot() +labs(
+  x = "Topic", 
+  y = "Openness to Belief Change", 
+  colour = "Topic",
+  title = "Baseline Differences in Openness to Belief Change by Topic"
+) + scale_color_brewer(palette = "Set1", labels = c("Climate Change", "Capital Punishment", "Exercise", "Universal Health"))+
+  scale_x_discrete(labels = baseline_xlabs) + theme_bw()
+#greater openness to belief change for UHC!
+
+
+#for moral conviction
+res.aov2 <- aov(value ~ topic, data = pilot_base_compare2)
+summary(res.aov2)
+#we see the same thing again with baseline differences in moral conviction across topics.
+
+baseline_moral_c<-ggplot(pilot_base_compare2, aes(x=topic, y=value, color=topic))
+baseline_moral_c+geom_boxplot() +labs(
+  x = "Topic", 
+  y = "Moral Conviction", 
+  colour = "Topic",
+  title = "Baseline Differences in Moral Conviction by Topic"
+) + scale_color_brewer(palette = "Set1", labels = c("Climate Change", "Capital Punishment", "Exercise", "Universal Health"))+
+  scale_x_discrete(labels = baseline_xlabs) + theme_bw()
+# as expected, we see essentially no moral conviction for exercise!
+
+###############
+# Tukey's HSD #
+###############
+install.packages("multcomp")
+library(multcomp)
+
+#openness to belief change
+TukeyHSD(res.aov)
+
+#moral conviction
+TukeyHSD(res.aov)
+
+
+
 
 #we can assess pre-planned pairwise comparisons using contrast coding
 #first, ensure that R sees our conditions as factors
