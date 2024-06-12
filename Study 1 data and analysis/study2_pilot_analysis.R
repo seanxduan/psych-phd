@@ -198,7 +198,7 @@ summary(anc_conv_death)
 
 anc_supp_climate <- aov(climate_support ~ condition + climate_belief_c, data = pilot)
 summary(anc_supp_climate)
-anc_conv_climate <- aov(climate_moral_c ~ condition * climate_belief_c, data = pilot)
+anc_conv_climate <- aov(climate_moral_c ~ condition + climate_belief_c, data = pilot)
 summary(anc_conv_climate)
 #differences in moral conviction change based on opennness to belief change!
 
