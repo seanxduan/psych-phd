@@ -1,6 +1,6 @@
 #basic data, analysis, and prep, for our 'pilot/study 1' data!
 
-pilot<-read.csv("Study 3 data and analysis/Belief+Change+Manipulation+Pilot+-+Spring+2023_May+20,+2024_16.28.csv")
+pilot<-read.csv("Study 3 data and analysis/Belief+Change+Manipulation+Pilot+-+Spring+2023_August+1,+2024_13.57.csv")
 
 #remove two 'blank' rows of data
 pilot_data<-pilot[-c(1,2),]
@@ -261,5 +261,5 @@ pilot_long_clean$exercise_moral_c<-rowMeans(pilot_long_clean[,26:32])
 pilot_long_clean$climate_moral_c<-rowMeans(pilot_long_clean[,36:42])
 
 
-write.csv(pilot_long_clean,'study2_pilot_clean.csv')
+write.csv(pilot_long_clean,'study2_pilot_clean_summer.csv')
 
