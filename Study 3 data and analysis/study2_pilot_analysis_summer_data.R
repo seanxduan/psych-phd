@@ -383,3 +383,4 @@ contrast(emm, contrasts, adjust = "bonferroni")
 
 #needing to make our tables for our pre-planned pairwise comparisions
 pairwise.t.test(pilot$uhc_moral_c, pilot$condition)
+
