@@ -496,6 +496,42 @@ fplot+geom_smooth(method = lm, alpha=.2, aes(group = condition))+ scale_color_ma
 
 #really great graph showing the effect of our intervention!
 
+#additional graphs in same style for the three other conditions we're looking at
+
+
+fplot2<-ggplot(pilot_model_long, aes(x=Time, y=CLIM_SUP, color=condition))+ geom_point(alpha =.3, position = position_jitter(width=.07))
+
+fplot2+geom_smooth(method = lm, alpha=.2, aes(group = condition))+ scale_color_manual(values=c("purple", "black"))+ 
+  labs(
+    x = "Time", 
+    y = "Support for Climate Change", 
+    colour = "Social Consensus Condition",
+    title = "Effect of Social Consensus Intervention on Support for Climate Change",
+    subtitle = "Perception of increased social consensus does not correlate with increased support"
+  ) + scale_x_discrete(labels = fplot_xlabs) + theme_bw()
+
+
+
+fplot3<-ggplot(pilot_model_long, aes(x=Time, y=UHC_SUP, color=condition))+ geom_point(alpha =.3, position = position_jitter(width=.07))
+
+fplot3+geom_smooth(method = lm, alpha=.2, aes(group = condition))+ scale_color_manual(values=c("purple", "black"))+ 
+  labs(
+    x = "Time", 
+    y = "Support for Universal Health Care", 
+    colour = "Social Consensus Condition",
+    title = "Effect of Social Consensus Intervention on Support for Universal Health Care",
+    subtitle = "Perception of increased social consensus causes increased support"
+  ) + scale_x_discrete(labels = fplot_xlabs) + theme_bw()
+
+
+
+
+
+
+
+
+
+
 
 #getting things set up so we can directly test the time x interaction condition ... which we didn't do originally
 #whoops!
