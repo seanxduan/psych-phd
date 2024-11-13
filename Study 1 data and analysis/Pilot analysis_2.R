@@ -12,6 +12,9 @@ library("gtsummary")
 #peel out only the demographic info?
 d1<-pilot[,c(23,40:43)]
 
+tbl_summary(d1)
+
+
 #lets get condition set-up properly as well lol
 #re-naming because we only got number values - so we can print our table
 d1 <- d1 %>%
