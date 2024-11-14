@@ -343,3 +343,57 @@ names(pilot_data)[59:66] <- c("fn_ai_supp",
                               "fn_ai_conv_1","fn_ai_conv_2","fn_ai_conv_3","fn_ai_conv_4",
                               "fn_ai_conv_5","fn_ai_conv_6","fn_ai_conv_7")
 
+#lets get the utiltarianism and deontological scores set up
+#note that we should reverse score HERE before we do the means
+#also - we need to replace the strings with numbers
+#lets try to do this w/ mutate! We've been wanting to 'get it' a bit better anyways
+
+#library(dplyr)
+#library(stringr)
+
+#test<-pilot_data%>%
+#  select(1:12)%>%
+#  str_replace_all(c("Strongly Disagree"= "1",
+                    "Neither Agree or Disagree" = "3",
+                    "Strongly Agree" = "5"))
+
+
+## not working... i think there's a better solution, we can figure it out? lets try something else just for fun
+
+#ez<-str_replace_all(pilot_data$Q1_1, c("Strongly Disagree"= "1",
+                                       "Neither Agree or Disagree" = "3",
+                                       "Strongly Agree" = "5"))
+
+#nah, aint it, i mean we can do it... but lets see if we can do an if,else statement
+#pilot_data %>%
+#  mutate(mpg = ifelse(cyl == 4, NA, mpg))
+#hmm nope
+
+#lets try a vectorized switch, using a homebrew fxn?
+#foo <- Vectorize(FUN = function(x) {
+#  switch(as.character(x),
+#        "Strongly Disagree" = 1,
+#         "Neither Agree or Disagree" = 3,
+#         "Strongly Agree" = 5,
+#         "Agree" = 4,
+#         "Disagree" = 2,
+#         NA)})
+#foo(pilot_data[,1])
+#eh. not really it, kinda close tho?
+
+
+
+#here's an extremely primative answer, lets see how it works?
+pilot_data[pilot_data == "Strongly Agree"] <- 5
+pilot_data[pilot_data == "Strongly Disagree"] <- 1
+pilot_data[pilot_data == "Neither Agree or Disagree"] <- 3
+pilot_data[pilot_data == "Disagree"] <- 2
+pilot_data[pilot_data == "Agree"] <- 4
+
+#we don't actually need to reverse score lmao'
+
+#lets look @ total utilitarianism (simple avg of util 1-6)
+pilot_data$utilitarian<-rowMeans(pilot_data[,8:13])
+
+#lets look @ total deontological (simple avg of util 1-6)
+pilot_data$deontological<-rowMeans(pilot_data[,14:19])
