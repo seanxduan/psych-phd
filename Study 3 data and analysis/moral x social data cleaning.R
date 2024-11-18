@@ -268,7 +268,7 @@ write.csv(pilot_long_clean,'study2_pilot_clean_summer.csv')
 ###############################################################################################################
 
 
-pilot<-read.csv("Study 3 data and analysis/Moral+Conviction+X+Social+Consensus+-+Fall+2024_November+13,+2024_14.36.csv")
+pilot<-read.csv("Study 3 data and analysis/Moral+Conviction+X+Social+Consensus+-+Fall+2024_November+18,+2024_14.59.csv")
 
 #remove two 'blank' rows of data
 pilot_data<-pilot[-c(1,2),]
@@ -343,45 +343,6 @@ names(pilot_data)[59:66] <- c("fn_ai_supp",
                               "fn_ai_conv_1","fn_ai_conv_2","fn_ai_conv_3","fn_ai_conv_4",
                               "fn_ai_conv_5","fn_ai_conv_6","fn_ai_conv_7")
 
-#lets get the utiltarianism and deontological scores set up
-#note that we should reverse score HERE before we do the means
-#also - we need to replace the strings with numbers
-#lets try to do this w/ mutate! We've been wanting to 'get it' a bit better anyways
-
-#library(dplyr)
-#library(stringr)
-
-#test<-pilot_data%>%
-#  select(1:12)%>%
-#  str_replace_all(c("Strongly Disagree"= "1",
-                    "Neither Agree or Disagree" = "3",
-                    "Strongly Agree" = "5"))
-
-
-## not working... i think there's a better solution, we can figure it out? lets try something else just for fun
-
-#ez<-str_replace_all(pilot_data$Q1_1, c("Strongly Disagree"= "1",
-                                       "Neither Agree or Disagree" = "3",
-                                       "Strongly Agree" = "5"))
-
-#nah, aint it, i mean we can do it... but lets see if we can do an if,else statement
-#pilot_data %>%
-#  mutate(mpg = ifelse(cyl == 4, NA, mpg))
-#hmm nope
-
-#lets try a vectorized switch, using a homebrew fxn?
-#foo <- Vectorize(FUN = function(x) {
-#  switch(as.character(x),
-#        "Strongly Disagree" = 1,
-#         "Neither Agree or Disagree" = 3,
-#         "Strongly Agree" = 5,
-#         "Agree" = 4,
-#         "Disagree" = 2,
-#         NA)})
-#foo(pilot_data[,1])
-#eh. not really it, kinda close tho?
-
-
 
 #here's an extremely primative answer, lets see how it works?
 pilot_data[pilot_data == "Strongly Agree"] <- 5
@@ -391,9 +352,78 @@ pilot_data[pilot_data == "Disagree"] <- 2
 pilot_data[pilot_data == "Agree"] <- 4
 
 #we don't actually need to reverse score lmao'
+#quickly check for complete cases?
+library(stats)
+# cut out the first two rows for being bunk data
+pilot_data<-pilot_data[-c(1,2),]
+
+
+#need to convert to numeric
+#can we do this using dplyr?
+#ok - need to figure out how to relabel our... politics alignment data (idk wtf why it's so bad)
+
+which(colnames(pilot_data)=="Pol_High_1")
+which(colnames(pilot_data)=="fn_ai_conv_7")
+
+pilot_data[,c(1:66,69,70)]<-pilot_data %>%
+  select(1:66,69,70)%>%
+  mutate_if(is.character,as.numeric)
+
+#ok - need to figure out how to relabel our... politics alignment data (idk wtf why it's so bad)
+pilot_data$Pol_High_1[pilot_data$Pol_High_1 == 3]<-1
+pilot_data$Pol_High_1[pilot_data$Pol_High_1 == 4]<-2
+pilot_data$Pol_High_1[pilot_data$Pol_High_1 == 5]<-3
+pilot_data$Pol_High_1[pilot_data$Pol_High_1 == 6]<-4
+pilot_data$Pol_High_1[pilot_data$Pol_High_1 == 7]<-5
+pilot_data$Pol_High_1[pilot_data$Pol_High_1 == 8]<-6
+pilot_data$Pol_High_1[pilot_data$Pol_High_1 == 9]<-7
+pilot_data$Pol_High_1[pilot_data$Pol_High_1 == 10]<-8
+pilot_data$Pol_High_1[pilot_data$Pol_High_1 == 11]<-9
+pilot_data$Pol_High_1[pilot_data$Pol_High_1 == 28]<-10
+pilot_data$Pol_High_1[pilot_data$Pol_High_1 == 29]<-11
 
 #lets look @ total utilitarianism (simple avg of util 1-6)
-pilot_data$utilitarian<-rowMeans(pilot_data[,8:13])
+pilot_data$utilitarian<-rowMeans(pilot_data[,1:6])
+#lets look @ total deontological (simple avg of util 7-12)
+pilot_data$deontological<-rowMeans(pilot_data[,7:12])
 
-#lets look @ total deontological (simple avg of util 1-6)
-pilot_data$deontological<-rowMeans(pilot_data[,14:19])
+#conviction score uhc_initial
+#reverse score second item
+which(colnames(pilot_data)=="in_uhc_conv_1")
+pilot_data$in_uhc_conv_2<-(0-pilot_data$in_uhc_conv_2)
+pilot_data$in_uhc_conviction<-rowMeans(pilot_data[,16:22])
+
+#conviction score capital punishment initial
+which(colnames(pilot_data)=="in_cap_conv_1")
+pilot_data$in_cap_conv_2<-(0-pilot_data$in_cap_conv_2)
+pilot_data$in_cap_conviction<-rowMeans(pilot_data[,26:32])
+
+#conviction score AI initial
+which(colnames(pilot_data)=="in_ai_conv_1")
+pilot_data$in_ai_conv_2<-(0-pilot_data$in_ai_conv_2)
+pilot_data$in_ai_conviction<-rowMeans(pilot_data[,36:42])
+
+###########
+
+#conviction score uhc final
+#reverse score second item
+which(colnames(pilot_data)=="fn_uhc_conv_1")
+which(colnames(pilot_data)=="fn_uhc_conv_7")
+pilot_data$fn_uhc_conv_2<-(0-pilot_data$fn_uhc_conv_2)
+pilot_data$fn_uhc_conviction<-rowMeans(pilot_data[,44:50])
+
+#conviction score capital punishment initial
+which(colnames(pilot_data)=="fn_cap_conv_1")
+which(colnames(pilot_data)=="fn_cap_conv_7")
+pilot_data$fn_cap_conv_2<-(0-pilot_data$fn_cap_conv_2)
+pilot_data$fn_cap_conviction<-rowMeans(pilot_data[,52:58])
+
+#conviction score AI initial
+which(colnames(pilot_data)=="fn_ai_conv_1")
+which(colnames(pilot_data)=="fn_ai_conv_7")
+pilot_data$fn_ai_conv_2<-(0-pilot_data$fn_ai_conv_2)
+pilot_data$fn_ai_conviction<-rowMeans(pilot_data[,60:66])
+
+#### cut out the extra material - then do a final melt for initial/final timing
+#### then we can start with basic analysis! hooray!
+#### maybe even a little graphing action :)
