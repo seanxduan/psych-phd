@@ -365,6 +365,8 @@ pilot_data<-pilot_data[-c(1,2),]
 which(colnames(pilot_data)=="Pol_High_1")
 which(colnames(pilot_data)=="fn_ai_conv_7")
 
+library(dplyr)
+
 pilot_data[,c(1:66,69,70)]<-pilot_data %>%
   select(1:66,69,70)%>%
   mutate_if(is.character,as.numeric)
@@ -427,3 +429,42 @@ pilot_data$fn_ai_conviction<-rowMeans(pilot_data[,60:66])
 #### cut out the extra material - then do a final melt for initial/final timing
 #### then we can start with basic analysis! hooray!
 #### maybe even a little graphing action :)
+which(colnames(pilot_data)=="fn_cap_supp")
+which(colnames(pilot_data)=="fn_ai_supp")
+which(colnames(pilot_data)=="Like_Free_R")
+
+
+pilot_data_short<-pilot_data[,c(13:15,#initial uhc
+                                23:25,#intial cap
+                                33:35,#initial ai
+                                43,#final uhc sup
+                                51,#final cap supp
+                                59,#final ai supp
+                                67:85#rest of stuff
+                                )]
+
+#change names for randomization blocks
+names(pilot_data_short)[22:23] <- c("conv_cond", "consen_cond")
+
+#remove "REFUSE" data
+pilot_data_short2<-subset(pilot_data_short,Debrief == '')
+
+pilot_data_short<-pilot_data_short2[,-20]
+
+#melt so we can do pre-post? or do we even need it...?
+#no, we need it, if only for graphing?
+
+pilot_data_long<-melt(setDT(pilot_data_short),measure=patterns("uhc_supp", "cap_supp", "ai_supp",
+                                                               "uhc_conviction","cap_conviction","ai_conviction"), 
+                      value.name=c("uhc_support", "cap_support", "ai_support",
+                                   "uhc_mconv", "cap_mconv", "ai_mconv"),
+                      variable.name="time")
+#rename 1 to pre and 2 to post
+
+library(tidyverse)
+pilot_data_long$time<-str_replace_all(pilot_data_long$time, c("1"= "Pre", "2" = "Post"))
+
+#time to save the two clean datasets for analysis next!
+
+write.csv(pilot_data_short, "study_3_clean.csv")
+write.csv(pilot_data_long, "study_3_long_clean.csv")
