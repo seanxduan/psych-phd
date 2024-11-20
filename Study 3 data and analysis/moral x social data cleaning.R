@@ -454,7 +454,7 @@ pilot_data_short<-pilot_data_short2[,-20]
 #melt so we can do pre-post? or do we even need it...?
 #no, we need it, if only for graphing?
 
-pilot_data_long<-melt(setDT(pilot_data_short),measure=patterns("uhc_supp", "cap_supp", "ai_supp",
+pilot_data_long<-melt(setDT(pilot_long),measure=patterns("uhc_supp", "cap_supp", "ai_supp",
                                                                "uhc_conviction","cap_conviction","ai_conviction"), 
                       value.name=c("uhc_support", "cap_support", "ai_support",
                                    "uhc_mconv", "cap_mconv", "ai_mconv"),
@@ -462,7 +462,7 @@ pilot_data_long<-melt(setDT(pilot_data_short),measure=patterns("uhc_supp", "cap_
 #rename 1 to pre and 2 to post
 
 library(tidyverse)
-pilot_data_long$time<-str_replace_all(pilot_data_long$time, c("1"= "Pre", "2" = "Post"))
+pilot_data_long$time<-str_replace_all(pilot_data_long$time, c("1"= "uhc", "2" = "cap", "3" = "ai"))
 
 #time to save the two clean datasets for analysis next!
 
