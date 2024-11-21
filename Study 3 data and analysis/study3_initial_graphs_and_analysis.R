@@ -256,3 +256,67 @@ sup_cap2<-lm(cap_support ~ conv_cond*consen_cond+in_cap_change+in_cap_familiar+u
 summary(sup_cap2)
 mconv_cap2<-lm(cap_mconv ~ conv_cond*consen_cond+in_cap_change+in_cap_familiar+utilitarian+deontological+time, data = pilot_long)
 summary(mconv_cap2)
+
+
+#########
+# lets try some additional tests as ethan recommended
+#########
+
+#first y = difference b/w pre and post treatment scores 
+#e.g. "compare the differences between pre and post treatments across the treatments!"
+
+#create a new y that indicates that!
+
+pilot$uhc_diff<-(pilot$fn_uhc_supp - pilot$in_uhc_supp)
+pilot$cap_diff<-(pilot$fn_cap_supp - pilot$in_cap_supp)
+pilot$ai_diff<-(pilot$fn_ai_supp - pilot$in_ai_supp)
+
+#then run the SAME analysis using the diff as the outcome var
+diff_uhc<-lm(uhc_diff ~ conv_cond*consen_cond+in_uhc_change+in_uhc_familiar+utilitarian+deontological, data = pilot)
+summary(diff_uhc)
+
+diff_cap<-lm(cap_diff ~ conv_cond*consen_cond+in_cap_change+in_cap_familiar+utilitarian+deontological, data = pilot)
+summary(diff_cap)
+
+diff_ai<-lm(ai_diff ~ conv_cond*consen_cond+in_ai_change+in_ai_familiar+utilitarian+deontological, data = pilot)
+summary(diff_ai)
+#we see that none of the shit looks good lmao
+#well - at least our initial understanding is that this ISN"T the way to examine it!
+
+#ok - facts, we need to get our demographic table up and running too lol
+#lets get it happening!
+
+library("gtsummary")
+
+#peel out only the demographic info?
+
+d1<-pilot[,c(16:20)]
+d1$Age_High<-as.numeric(d1$Age_High)
+d1$Pol_High_1<-as.numeric(d1$Pol_High_1)
+
+d1 %>%
+  tbl_summary(
+    statistic = list(all_continuous() ~ "{mean} ({sd})",
+                     all_categorical() ~ "{n} / ({p}%)"),
+    digits = all_continuous() ~ 2,
+    label = c(School_High ~ "School Year",
+              Race_High ~ "Race",
+              Gender_High ~"Gender",
+              Age_High ~ "Age"),
+    missing_text = "(Missing)",
+    sort = list(everything() ~ "frequency")
+  ) %>% bold_labels() %>% modify_header(label = "**Social Consensus Condition**")
+str(d1)
+
+d1 %>%
+  tbl_summary(label = c(School_High ~ "School Year",
+                         Race_High ~ "Race",
+                         Gender_High ~"Gender",
+                         Age_High ~ "Age",
+                        Pol_High_1 ~ "Political Orientation"),
+              type = c(Age_High, Pol_High_1) ~ "continuous",
+              digits = all_continuous() ~ 2,
+              sort = list(all_categorical() ~ "frequency"),
+              statistic = list(all_continuous() ~ "{mean} ({sd})",
+                               all_categorical() ~ "{n} / ({p}%)"))%>%
+  bold_labels() %>% modify_header(label = "**Demographic Information**")
