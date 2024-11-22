@@ -1,0 +1,141 @@
+---
+title: "Study 3 Initial Graphs"
+output: pdf_document
+date: "2024-11-22"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+pilot_long<-read.csv("study_3_long_clean.csv")
+pilot<-read.csv("study_3_clean.csv")
+
+#we're gonna start w/ gtsummary, since that's how we closed it out originally
+library("lme4")
+library("texreg")
+library("ggplot2")
+library("tidyverse")
+library("gtable")
+library("gtsummary")
+library("reshape2")
+library(data.table)
+pilot_xtra_long<-melt(setDT(pilot_long),measure=patterns("_familiar", "_change", "_support", "_mconv"), 
+                      value.name=c("topic_familiarity", "topic_changeable", "topic_support", "topic_moral_c"),
+                      variable.name="topic")
+#subset out the 'pre' results so we can see baseline differences
+
+#rename the topics lol
+
+pilot_xtra_long$topic<-str_replace_all(pilot_xtra_long$topic, c("1"= "uhc", "2" = "cap", "3" = "ai"))
+
+pilot_xtra_long<-subset(pilot_xtra_long,time == 'Pre')
+```
+
+## Initial Report
+
+We see some initial differences in topic familiarity; similar but less so differences in topic 'changeablity'. A significant difference in baseline support for UHC, as well ase for baseline moral conviction
+
+
+```{r 1graphs}
+plot1a<-ggplot(pilot_xtra_long, aes(x=topic, y=topic_familiarity, color=topic)) +
+  geom_boxplot() +labs(
+  )
+plot1a + scale_color_brewer(palette = "Set1")
+
+plot1b<-ggplot(pilot_xtra_long, aes(x=topic, y=topic_changeable, color=topic)) +
+  geom_boxplot() +labs(
+  )
+plot1b + scale_color_brewer(palette = "Set1")
+
+plot1c<-ggplot(pilot_xtra_long, aes(x=topic, y=topic_support, color=topic)) +
+  geom_boxplot() +labs(
+  )
+plot1c + scale_color_brewer(palette = "Set1")
+#a priori support is nice and high for uhc, but p strongly against the other two!
+
+plot1d<-ggplot(pilot_xtra_long, aes(x=topic, y=topic_moral_c, color=topic)) +
+  geom_boxplot() +labs(
+  )
+plot1d + scale_color_brewer(palette = "Set1")
+```
+
+### Effects on UHC
+No effects on moral conviction; pre-post differences for support, however, no differences between interventions.
+
+```{r 2graphs}
+#subset of post results only?
+plot2a<-ggplot(pilot_long, aes(x=consen_cond, y=uhc_support, color=conv_cond)) +
+  geom_boxplot() +labs(
+  )+facet_wrap(vars(time))
+
+#added the wrapper
+plot2a + scale_color_brewer(palette = "Set1")
+
+#consensus seems to impact, but NOT conviction? for at least general support
+
+plot2b<-ggplot(pilot_long, aes(x=consen_cond, y=uhc_mconv, color=conv_cond)) +
+  geom_boxplot() +labs(
+  )+facet_wrap(vars(time))
+
+plot2b + scale_color_brewer(palette = "Set1")
+
+```
+
+
+### Effects on Capital Punishment
+Main effect of social consensus condition, such that being in the 'low' block resulted in lower moral conviction, with an interaction between social consensus and moral conviction, such that participants who have been in the pragmatic condition, reverses the effect of being in the low social consensus condition;Again, pre-post differences for support, however, no differences between interventions.
+
+```{r 3graphs}
+plot3a<-ggplot(pilot_long, aes(x=consen_cond, y=cap_support, color=conv_cond)) +
+  geom_boxplot() +labs(
+  )+facet_wrap(vars(time))
+
+plot3a + scale_color_brewer(palette = "Set1")
+
+#consensus seems to impact, but NOT conviction? for at least general support
+
+plot3b<-ggplot(pilot_long, aes(x=consen_cond, y=cap_mconv, color=conv_cond)) +
+  geom_boxplot() +labs(
+  )+facet_wrap(vars(time))
+
+plot3b + scale_color_brewer(palette = "Set1")
+
+```
+
+### Effects on AI in the workplace
+No effects on moral conviction; Again, pre-post differences for support, however, no differences between interventions.
+
+
+```{r 4graphs}
+plot4a<-ggplot(pilot_long, aes(x=consen_cond, y=ai_support, color=conv_cond)) +
+  geom_boxplot() +labs(
+  )+facet_wrap(vars(time))
+
+plot4a + scale_color_brewer(palette = "Set1")
+#consensus seems to impact, but NOT conviction? for at least general support
+
+plot4b<-ggplot(pilot_long, aes(x=consen_cond, y=ai_mconv, color=conv_cond)) +
+  geom_boxplot() +labs(
+  )+facet_wrap(vars(time))
+
+plot4b + scale_color_brewer(palette = "Set1")
+```
+
+### Some extra graphs
+
+```{r 5graphs}
+plot6a<-ggplot(pilot, aes(x=in_ai_change, y=fn_ai_supp, color=consen_cond)) +
+  geom_point() +labs(
+  ) + geom_smooth( method = "lm")
+
+plot6a + scale_color_brewer(palette = "Set1")
+
+
+#scatterplot for final capital punishment support as affected by openness to cap change#
+
+plot6b<-ggplot(pilot, aes(x=in_cap_change, y=fn_cap_supp, color=consen_cond)) +
+  geom_point() +labs(
+  ) + geom_smooth( method = "lm")
+
+plot6b + scale_color_brewer(palette = "Set1")
+```
