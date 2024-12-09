@@ -1,6 +1,10 @@
-#basic data, analysis, and prep, for our 'pilot/study 1' data!
+#basic data, analysis, and prep, for our 'study 3 data'
+#finally finished the additional data collection on Dec 5th 2024 so time to
+#put up a complete and full updated dataset!
 
-pilot<-read.csv("Study 3 data and analysis/Moral+Conviction+X+Social+Consensus+-+Fall+2024_November+13,+2024_14.36.csv")
+#pilot<-read.csv("Study 3 data and analysis/Moral+Conviction+X+Social+Consensus+-+Fall+2024_November+13,+2024_14.36.csv")
+pilot<-read.csv("Study 3 data and analysis/Moral+Conviction+X+Social+Consensus+-+Fall+2024_December+9,+2024_13.40.csv")
+
 
 #remove two 'blank' rows of data
 pilot_data<-pilot[-c(1,2),]
@@ -267,8 +271,13 @@ write.csv(pilot_long_clean,'study2_pilot_clean_summer.csv')
 #### Can I just ignore the center elements (e.g.,soc. consensus manipulation it's not directly looked at?) ####
 ###############################################################################################################
 
+#lmaoooo this is hilarious
+#lets try it again from here
 
-pilot<-read.csv("Study 3 data and analysis/Moral+Conviction+X+Social+Consensus+-+Fall+2024_November+18,+2024_14.59.csv")
+#pilot<-read.csv("Study 3 data and analysis/Moral+Conviction+X+Social+Consensus+-+Fall+2024_November+18,+2024_14.59.csv")
+pilot<-read.csv("Study 3 data and analysis/Moral+Conviction+X+Social+Consensus+-+Fall+2024_December+9,+2024_13.40.csv")
+
+
 
 #remove two 'blank' rows of data
 pilot_data<-pilot[-c(1,2),]
@@ -454,7 +463,7 @@ pilot_data_short<-pilot_data_short2[,-20]
 #melt so we can do pre-post? or do we even need it...?
 #no, we need it, if only for graphing?
 
-pilot_data_long<-melt(setDT(pilot_long),measure=patterns("uhc_supp", "cap_supp", "ai_supp",
+pilot_data_long<-melt(setDT(pilot_data_short),measure=patterns("uhc_supp", "cap_supp", "ai_supp",
                                                                "uhc_conviction","cap_conviction","ai_conviction"), 
                       value.name=c("uhc_support", "cap_support", "ai_support",
                                    "uhc_mconv", "cap_mconv", "ai_mconv"),
@@ -468,3 +477,26 @@ pilot_data_long$time<-str_replace_all(pilot_data_long$time, c("1"= "uhc", "2" = 
 
 write.csv(pilot_data_short, "study_3_clean.csv")
 write.csv(pilot_data_long, "study_3_long_clean.csv")
+
+
+##here's some extra code to see if we can 'wipe out' dupes in our dataset
+#might improve the results and lead to better looking models?
+??distinct
+
+library(dplyr)
+
+
+bort<-distinct(pilot, id, .keep_all = TRUE)
+
+#nice job! looks like we're chopping out roughly 40 obs
+#however... i want to see if we can separate these values and compare!
+#try out the duplicated function
+pilot[duplicated(pilot) | duplicated(pilot,fromLast = TRUE),]
+#unsure if this is solving it... look into it further w/ other data?
+
+#wait... we can use the X value as an index
+#and then see which entries that DONT share an x value in our shortened version
+#exist in our full dataset
+#then pull those aside for analysis?
+
+#great idea!

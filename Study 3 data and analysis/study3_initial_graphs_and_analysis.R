@@ -34,7 +34,7 @@ plot1a + scale_color_brewer(palette = "Set1")
 library(reshape2)
 library(data.table)
 
-pilot_xtra_long<-melt(setDT(pilot_long),measure=patterns("_familiar", "_change", "_support", "_mconv"), 
+pilot_xtra_long<-data.table::melt(setDT(pilot_long),measure=patterns("_familiar", "_change", "_support", "_mconv"), 
                       value.name=c("topic_familiarity", "topic_changeable", "topic_support", "topic_moral_c"),
                       variable.name="topic")
 #subset out the 'pre' results so we can see baseline differences
