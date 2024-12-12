@@ -463,20 +463,20 @@ pilot_data_short<-pilot_data_short2[,-20]
 #melt so we can do pre-post? or do we even need it...?
 #no, we need it, if only for graphing?
 
-pilot_data_long<-melt(setDT(pilot_data_short),measure=patterns("uhc_supp", "cap_supp", "ai_supp",
-                                                               "uhc_conviction","cap_conviction","ai_conviction"), 
-                      value.name=c("uhc_support", "cap_support", "ai_support",
-                                   "uhc_mconv", "cap_mconv", "ai_mconv"),
-                      variable.name="time")
+#pilot_data_long<-melt(setDT(pilot_data_short),measure=patterns("uhc_supp", "cap_supp", "ai_supp",
+#                                                               "uhc_conviction","cap_conviction","ai_conviction"), 
+#                      value.name=c("uhc_support", "cap_support", "ai_support",
+#                                   "uhc_mconv", "cap_mconv", "ai_mconv"),
+#                      variable.name="time")
 #rename 1 to pre and 2 to post
 
-library(tidyverse)
-pilot_data_long$time<-str_replace_all(pilot_data_long$time, c("1"= "uhc", "2" = "cap", "3" = "ai"))
+#library(tidyverse)
+#pilot_data_long$time<-str_replace_all(pilot_data_long$time, c("1"= "uhc", "2" = "cap", "3" = "ai"))
 
 #time to save the two clean datasets for analysis next!
 
-write.csv(pilot_data_short, "study_3_clean.csv")
-write.csv(pilot_data_long, "study_3_long_clean.csv")
+#write.csv(pilot_data_short, "study_3_clean.csv")
+#write.csv(pilot_data_long, "study_3_long_clean.csv")
 
 
 ##here's some extra code to see if we can 'wipe out' dupes in our dataset
@@ -486,12 +486,12 @@ write.csv(pilot_data_long, "study_3_long_clean.csv")
 library(dplyr)
 
 
-bort<-distinct(pilot, id, .keep_all = TRUE)
+bort<-distinct(pilot_data_short, id, .keep_all = TRUE)
 
 #nice job! looks like we're chopping out roughly 40 obs
 #however... i want to see if we can separate these values and compare!
 #try out the duplicated function
-pilot[duplicated(pilot) | duplicated(pilot,fromLast = TRUE),]
+#pilot[duplicated(pilot) | duplicated(pilot,fromLast = TRUE),]
 #unsure if this is solving it... look into it further w/ other data?
 
 #wait... we can use the X value as an index
@@ -500,3 +500,38 @@ pilot[duplicated(pilot) | duplicated(pilot,fromLast = TRUE),]
 #then pull those aside for analysis?
 
 #great idea!
+
+#note - we need to run the same distinct check code on what we feed into the 'long' dataset
+#then make a NEW long dataset afterwards
+
+sum(table(pilot_data_short$id))
+#lets try adding an index for our index 
+pilot_data_short$num = seq(1, by =  1, length.out = nrow(pilot_data_short))
+bort<-distinct(pilot_data_short, id, .keep_all = TRUE)
+
+index<-bort$num
+length(index)
+
+#subset out everything that got chopped out
+
+length(pilot_data_short[!index,])
+bort2<-pilot_data_short[!index,]
+# ok sounds good looks like we got it?
+
+pilot_data_short<-bort[,-31]
+
+library(data.table)
+pilot_data_long<-data.table::melt(setDT(pilot_data_short),measure=patterns("uhc_supp", "cap_supp", "ai_supp",
+                                                               "uhc_conviction","cap_conviction","ai_conviction"), 
+                      value.name=c("uhc_support", "cap_support", "ai_support",
+                                   "uhc_mconv", "cap_mconv", "ai_mconv"),
+                      variable.name="time")
+#rename 1 to pre and 2 to post
+
+library(tidyverse)
+pilot_data_long$time<-str_replace_all(pilot_data_long$time, c("1"= "pre", "2" = "post"))
+
+#no dupes version saved
+
+write.csv(pilot_data_short, "study_3_clean_nd.csv")
+write.csv(pilot_data_long, "study_3_long_clean_nd.csv")

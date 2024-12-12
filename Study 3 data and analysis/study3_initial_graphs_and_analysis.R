@@ -1,6 +1,8 @@
 ### As per usual, lets start by getting tables setup ###
-pilot_long<-read.csv("Study 3 data and analysis/study_3_long_clean.csv")
-pilot<-read.csv("Study 3 data and analysis/study_3_clean.csv")
+
+#doing it now WITHOUT the dupes
+pilot_long<-read.csv("study_3_long_clean_nd.csv")
+pilot<-read.csv("study_3_clean_nd.csv")
 
 #we're gonna start w/ gtsummary, since that's how we closed it out originally
 library("lme4")
@@ -43,7 +45,7 @@ pilot_xtra_long<-data.table::melt(setDT(pilot_long),measure=patterns("_familiar"
 
 pilot_xtra_long$topic<-str_replace_all(pilot_xtra_long$topic, c("1"= "uhc", "2" = "cap", "3" = "ai"))
 
-pilot_xtra_long<-subset(pilot_xtra_long,time == 'Pre')
+pilot_xtra_long<-subset(pilot_xtra_long,time == 'pre')
 
 #lets try our original graph but w/ a couple of baseline changes!
 
