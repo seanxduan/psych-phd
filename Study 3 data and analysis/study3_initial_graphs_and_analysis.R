@@ -322,3 +322,101 @@ d1 %>%
               statistic = list(all_continuous() ~ "{mean} ({sd})",
                                all_categorical() ~ "{n} / ({p}%)"))%>%
   bold_labels() %>% modify_header(label = "**Demographic Information**")
+
+
+
+#### additional material copied from earlier work on study #####
+#### 2 to generate baseline graphs and formula, also it's kinda easy? ####
+
+#should we check as an exploratory measure, differences in baseline
+#openness to belief change/baseline conviction by type of exercise?
+## create a data subset to do this
+
+#selecting the baseline elements here
+pilot_baselines<-pilot[,c(3:4,6:7,9:10,26:28)]
+pilot_baselines$ID<-1:length(pilot_baselines$in_uhc_change)
+
+#reshape wide to long
+library(tidyr)
+pilot_base_compare1 <-pivot_longer(pilot_baselines, cols=c(1,3,5), names_to ="topic", values_to = "value")
+#code for familiarity
+#lmao this code is janky af but yes it does indeed get there
+pilot_base_compare2 <-pivot_longer(pilot_baselines, cols=c(2,4,6), names_to ="topic", values_to = "value")
+# for openness to change
+pilot_base_compare3 <-pivot_longer(pilot_baselines, cols=c(7:9), names_to ="topic", values_to = "value")
+#for initial conviction
+
+
+#######################
+### topic familiarity
+#######################
+
+res.aov <- aov(value ~ topic, data = pilot_base_compare1)
+summary(res.aov)
+# yes, each topic has differing levels of baseline openness to belief change
+# lets throw up a basic graph showing these differences?
+baseline_belief_c<-ggplot(pilot_base_compare1, aes(x=topic, y=value, color=topic))
+#labels for the x-axis
+
+baseline_xlabs<-c("AI", "Capital Punishment", "UHC")
+baseline_belief_c+geom_boxplot() +labs(
+  x = "Topic", 
+  y = "Familiarity with Topic", 
+  colour = "Topic",
+  title = "Baseline Differences in Topic Familiarity"
+) + scale_color_brewer(palette = "Set1", labels = c("Usage of AI in the Workplace", "Capital Punishment", "Universal Health Care"))+
+  scale_x_discrete(labels = baseline_xlabs) + theme_bw()
+
+
+####################
+######belief change
+####################
+
+res.aov2 <- aov(value ~ topic, data = pilot_base_compare2)
+summary(res.aov2)
+
+baseline_belief_c<-ggplot(pilot_base_compare2, aes(x=topic, y=value, color=topic))
+#labels for the x-axis
+
+baseline_xlabs<-c("AI", "Capital Punishment", "UHC")
+baseline_belief_c+geom_boxplot() +labs(
+  x = "Topic", 
+  y = "Openness to Belief Change", 
+  colour = "Topic",
+  title = "Baseline Differences in Openness to Belief Change"
+) + scale_color_brewer(palette = "Set1", labels = c("Usage of AI in the Workplace", "Capital Punishment", "Universal Health Care"))+
+  scale_x_discrete(labels = baseline_xlabs) + theme_bw()
+#greater openness to belief change for UHC!
+
+#############################
+#initial moral conviction
+#############################
+
+res.aov3 <- aov(value ~ topic, data = pilot_base_compare3)
+summary(res.aov3)
+
+baseline_belief_c<-ggplot(pilot_base_compare3, aes(x=topic, y=value, color=topic))
+#labels for the x-axis
+
+baseline_xlabs<-c("AI", "Capital Punishment", "UHC")
+baseline_belief_c+geom_boxplot() +labs(
+  x = "Topic", 
+  y = "Initial Moral Conviction", 
+  colour = "Topic",
+  title = "Baseline Differences in Initial Moral Conviction"
+) + scale_color_brewer(palette = "Set1", labels = c("Usage of AI in the Workplace", "Capital Punishment", "Universal Health Care"))+
+  scale_x_discrete(labels = baseline_xlabs) + theme_bw()
+#greater openness to belief change for UHC!
+
+
+
+###############
+# Tukey's HSD #
+###############
+library(multcomp)
+#topic familiarity
+TukeyHSD(res.aov)
+#openness to change
+TukeyHSD(res.aov2)
+#initial moral conviction
+TukeyHSD(res.aov3)
