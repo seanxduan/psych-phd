@@ -237,6 +237,12 @@ hist(pilot$fn_cap_supp-pilot$in_cap_supp)
 sup_ai2<-lm(ai_support ~ conv_cond*consen_cond+in_ai_change+in_ai_familiar+utilitarian+deontological+time, data = pilot_long)
 summary(sup_ai2)
 #ok, so we do see an affect of pre-post, both interventions DID increase support
+
+#try an interaction w/ time?
+sup_ai3<-lm(ai_support ~ conv_cond*consen_cond*time+in_ai_change+in_ai_familiar+utilitarian+deontological, data = pilot_long)
+summary(sup_ai3)
+
+
 # we can test similar things for conviction?
 mconv_ai2<-lm(ai_mconv ~ conv_cond*consen_cond+in_ai_change+in_ai_familiar+utilitarian+deontological+time, data = pilot_long)
 summary(mconv_ai2)
