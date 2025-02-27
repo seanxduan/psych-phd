@@ -230,8 +230,221 @@ hist(pilot$fn_cap_conviction-pilot$in_cap_conviction)
 #can we see the same on support?
 
 hist(pilot$fn_ai_supp-pilot$in_ai_supp)
+#can we sep this hist by soc consensus?
+ai_hi<-subset(pilot, consen_cond=="SocialConsensus-High")
+ai_lo<-subset(pilot, consen_cond=="SocialConsensus-Low")
+hist(ai_hi$fn_ai_supp-ai_hi$in_ai_supp)
+mean(ai_hi$fn_ai_supp-ai_hi$in_ai_supp)
+
+hist(ai_lo$fn_ai_supp-ai_lo$in_ai_supp)
+mean(ai_lo$fn_ai_supp-ai_lo$in_ai_supp)
+
 hist(pilot$fn_uhc_supp-pilot$in_uhc_supp)
 hist(pilot$fn_cap_supp-pilot$in_cap_supp)
+#there does seem to be a difference... maybe best way to check is... some sort of t-test?
+#just want to confirm that there are differences in support change between our conditions
+#maybe try it again w/ all 4 'blocks' and see if there are differences?
+
+#do a 
+
+pilot$comb_cond<-paste(pilot$consen_cond,pilot$conv_cond)
+#subset first
+#
+
+pilot_diff_compare<-pivot_longer(pilot, cols=c(32:34), names_to ="topic", values_to = "value")
+
+#we did it backwards, split first then subset by topic
+
+#we're going to do it again so we can have the same assessment of changes in moral conviction!!!################!!!
+
+
+#######################################
+### UHC DIFFERENCE SCORES BY TOPIC  ###
+#######################################
+
+uhc_diff<-subset(pilot_diff_compare, topic=="uhc_diff")
+#differences in UHC change score by condition
+res.aov <- aov(value ~ comb_cond, data = uhc_diff)
+
+summary(res.aov)
+#groups don't seem to have differences in UHC change scores.
+
+# lets throw up a basic graph showing these differences?
+uhc_diff_gfx<-ggplot(uhc_diff, aes(x=comb_cond, y=value, color=comb_cond))
+
+baseline_xlabs<-c("SC-High + Moral", "SC-High + Prag.", "SC-Low + Moral", "SC-Low + Prag.")
+
+uhc_diff_gfx+geom_boxplot() +labs(
+  x = "Manipulation Condition", 
+  y = "Change in Support for UHC", 
+  colour = "Topic",
+  title = "Changes in Support for Universal Health Care Across All Manipulation Conditions"
+) + scale_color_brewer(palette = "Set1", labels = c("High Social Consensus + Moral Essay", "High Social Consensus + Pragmatic Essay",
+                                                    "Low Social Consensus + Moral Essay", "Low Social Consensus + Pragmatic Essay"))+
+  scale_x_discrete(labels = baseline_xlabs) + theme_bw()+scale_y_continuous(limits = c(-50, 50))
+#need to relabel the scale but mostly there
+#clearly shows that there isn't really big differences in 'difference scores' between our four conditions'
+#but also shows that there is significant change in value regardless
+
+#do it again for the other factors?
+
+#################################################
+### DEATH PENALTY DIFFERENCE SCORES BY TOPIC  ###
+#################################################
+
+cap_diff<-subset(pilot_diff_compare, topic=="cap_diff")
+#differences in UHC change score by condition
+res.aov <- aov(value ~ comb_cond, data = cap_diff)
+
+summary(res.aov)
+#groups don't seem to have differences in UHC change scores.
+
+
+# lets throw up a basic graph showing these differences?
+cap_diff_gfx<-ggplot(cap_diff, aes(x=comb_cond, y=value, color=comb_cond))
+
+baseline_xlabs<-c("SC-High + Moral", "SC-High + Prag.", "SC-Low + Moral", "SC-Low + Prag.")
+
+cap_diff_gfx+geom_boxplot() +labs(
+  x = "Manipulation Condition", 
+  y = "Change in Support for Capital Punishment", 
+  colour = "Topic",
+  title = "Changes in Support for Capital Punishment Across All Manipulation Conditions"
+) + scale_color_brewer(palette = "Set1", labels = c("High Social Consensus + Moral Essay", "High Social Consensus + Pragmatic Essay",
+                                                    "Low Social Consensus + Moral Essay", "Low Social Consensus + Pragmatic Essay"))+
+  scale_x_discrete(labels = baseline_xlabs) + theme_bw()+scale_y_continuous(limits = c(-50, 50))
+
+
+######################################
+### AI DIFFERENCE SCORES BY TOPIC  ###
+######################################
+
+ai_diff<-subset(pilot_diff_compare, topic=="ai_diff")
+#differences in UHC change score by condition
+res.aov <- aov(value ~ comb_cond, data = ai_diff)
+
+summary(res.aov)
+#groups don't seem to have differences in UHC change scores.
+
+
+# lets throw up a basic graph showing these differences?
+ai_diff_gfx<-ggplot(ai_diff, aes(x=comb_cond, y=value, color=comb_cond))
+
+baseline_xlabs<-c("SC-High + Moral", "SC-High + Prag.", "SC-Low + Moral", "SC-Low + Prag.")
+
+ai_diff_gfx+geom_boxplot() +labs(
+  x = "Manipulation Condition", 
+  y = "Change in Support for Usage of AI in the Workplace", 
+  colour = "Topic",
+  title = "Changes in Support for Usage of Artificial Intelligence in the Workplace Across All Manipulation Conditions"
+) + scale_color_brewer(palette = "Set1", labels = c("High Social Consensus + Moral Essay", "High Social Consensus + Pragmatic Essay",
+                                                    "Low Social Consensus + Moral Essay", "Low Social Consensus + Pragmatic Essay"))+
+  scale_x_discrete(labels = baseline_xlabs) + theme_bw()+scale_y_continuous(limits = c(-50, 50))
+
+
+
+#####
+#TL:DR
+# all four condition combinations improved support
+# no differences by condition.... because all of them increased support a comparable amount
+#####
+
+#also! perhaps scale the y-axis and x-axis to fixed values so we can easily compare across the three sets of graphs
+
+###################################################
+# Differences in Moral Conviction Change by Topic #
+###################################################
+
+pilot$uhc_conv_diff<-(pilot$fn_uhc_conviction-pilot$in_uhc_conviction)
+pilot$ai_conv_diff<-(pilot$fn_ai_conviction-pilot$in_ai_conviction)
+pilot$cap_conv_diff<-(pilot$fn_cap_conviction-pilot$in_cap_conviction)
+
+pilot_conv_compare<-pivot_longer(pilot, cols=c(36:38), names_to ="topic", values_to = "value")
+
+
+######## for UHC #########
+
+uhc_mc<-subset(pilot_conv_compare, topic=="uhc_conv_diff")
+#differences in UHC change score by condition
+res.aov <- aov(value ~ comb_cond, data = uhc_mc)
+
+summary(res.aov)
+#hmm seems like some real fucking close to differences here.
+#lets look at the graph to compare?
+
+uhc_conv_gfx<-ggplot(uhc_mc, aes(x=comb_cond, y=value, color=comb_cond))
+
+baseline_xlabs<-c("SC-High + Moral", "SC-High + Prag.", "SC-Low + Moral", "SC-Low + Prag.")
+
+uhc_conv_gfx+geom_boxplot() +labs(
+  x = "Manipulation Condition", 
+  y = "Change in Moral Conviction", 
+  colour = "Topic",
+  title = "Changes in Percieved Moral Conviction regarding Universal Health Care Across All Manipulation Conditions"
+) + scale_color_brewer(palette = "Set1", labels = c("High Social Consensus + Moral Essay", "High Social Consensus + Pragmatic Essay",
+                                                    "Low Social Consensus + Moral Essay", "Low Social Consensus + Pragmatic Essay"))+
+  scale_x_discrete(labels = baseline_xlabs) + theme_bw()+scale_y_continuous(limits = c(-50, 50))
+
+#running a quick tukey HSD to see what's up
+library(multcomp)
+TukeyHSD(res.aov)
+#nope, tukey says no significant differences.
+
+
+######## for capital punishment #########
+
+cap_mc<-subset(pilot_conv_compare, topic=="cap_conv_diff")
+#differences in UHC change score by condition
+res.aov <- aov(value ~ comb_cond, data = cap_mc)
+summary(res.aov)
+#no major differences.
+
+cap_conv_gfx<-ggplot(cap_mc, aes(x=comb_cond, y=value, color=comb_cond))
+
+cap_conv_gfx+geom_boxplot() +labs(
+  x = "Manipulation Condition", 
+  y = "Change in Moral Conviction", 
+  colour = "Topic",
+  title = "Changes in Percieved Moral Conviction regarding Capital Punishment Across All Manipulation Conditions"
+) + scale_color_brewer(palette = "Set1", labels = c("High Social Consensus + Moral Essay", "High Social Consensus + Pragmatic Essay",
+                                                    "Low Social Consensus + Moral Essay", "Low Social Consensus + Pragmatic Essay"))+
+  scale_x_discrete(labels = baseline_xlabs) + theme_bw()+scale_y_continuous(limits = c(-50, 50))
+
+
+####### for AI in the workplace #######
+
+ai_mc<-subset(pilot_conv_compare, topic=="ai_conv_diff")
+#differences in UHC change score by condition
+res.aov <- aov(value ~ comb_cond, data = ai_mc)
+summary(res.aov)
+#differences, mild but there?
+
+ai_conv_gfx<-ggplot(ai_mc, aes(x=comb_cond, y=value, color=comb_cond))
+
+ai_conv_gfx+geom_boxplot() +labs(
+  x = "Manipulation Condition", 
+  y = "Change in Moral Conviction", 
+  colour = "Topic",
+  title = "Changes in Percieved Moral Conviction regarding usage of Artificial Intelligence in the Workforce Across All Manipulation Conditions"
+) + scale_color_brewer(palette = "Set1", labels = c("High Social Consensus + Moral Essay", "High Social Consensus + Pragmatic Essay",
+                                                    "Low Social Consensus + Moral Essay", "Low Social Consensus + Pragmatic Essay"))+
+  scale_x_discrete(labels = baseline_xlabs) + theme_bw()+scale_y_continuous(limits = c(-50, 50))
+
+TukeyHSD(res.aov)
+
+############ maybe one more set of graphs showing improvement pre-post?
+
+
+
+
+
+
+
+
+#labels for the x-axis
+#####################
+#####################
+
 
 #run a quick test to see how AI support is affected by things
 sup_ai2<-lm(ai_support ~ conv_cond*consen_cond+in_ai_change+in_ai_familiar+utilitarian+deontological+time, data = pilot_long)
