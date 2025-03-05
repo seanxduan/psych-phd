@@ -431,6 +431,21 @@ library(multcomp)
 TukeyHSD(res.aov)
 #nope, tukey says no significant differences.
 
+#run the same graph but for utilitarian orientation
+
+uhc_conv_util<-ggplot(uhc_mc, aes(x=utilitarian, y=value))
+
+uhc_conv_util+geom_jitter(width = .2, height = .2, alpha = 0.5, size = 2) +
+  geom_smooth(method = lm, linetype = "dashed", se = FALSE) +
+  labs(
+  x = "Utiltarian Orientation", 
+  y = "Change in Moral Conviction", 
+  colour = "Topic",
+  title = "Changes in Percieved Moral Conviction regarding Universal Health Care by Utilitarian Orientation")+
+  scale_color_brewer(palette = "Set1")+
+  theme_bw()+scale_y_continuous(limits = c(-50, 50))+
+  scale_x_continuous(limits = c(1, 5))
+
 
 ######## for capital punishment #########
 
@@ -450,6 +465,19 @@ cap_conv_gfx+geom_boxplot() +labs(
 ) + scale_color_brewer(palette = "Set1", labels = c("High Social Consensus + Moral Essay", "High Social Consensus + Pragmatic Essay",
                                                     "Low Social Consensus + Moral Essay", "Low Social Consensus + Pragmatic Essay"))+
   scale_x_discrete(labels = baseline_xlabs) + theme_bw()+scale_y_continuous(limits = c(-50, 50))
+
+cap_conv_util<-ggplot(cap_mc, aes(x=utilitarian, y=value))
+
+cap_conv_util+geom_jitter(width = .2, height = .2, alpha = 0.5, size = 2) +
+  geom_smooth(method = lm, linetype = "dashed", se = FALSE) +
+  labs(
+    x = "Utiltarian Orientation", 
+    y = "Change in Moral Conviction", 
+    colour = "Topic",
+    title = "Changes in Percieved Moral Conviction regarding Capital Punishment by Utilitarian Orientation")+
+  scale_color_brewer(palette = "Set1")+
+  theme_bw()+scale_y_continuous(limits = c(-50, 50))+
+  scale_x_continuous(limits = c(1, 5))
 
 
 ####### for AI in the workplace #######
@@ -472,6 +500,20 @@ ai_conv_gfx+geom_boxplot() +labs(
   scale_x_discrete(labels = baseline_xlabs) + theme_bw()+scale_y_continuous(limits = c(-50, 50))
 
 TukeyHSD(res.aov)
+
+ai_conv_util<-ggplot(ai_mc, aes(x=utilitarian, y=value))
+
+ai_conv_util+geom_jitter(width = .2, height = .2, alpha = 0.5, size = 2) +
+  geom_smooth(method = lm, linetype = "dashed", se = FALSE) +
+  labs(
+    x = "Utiltarian Orientation", 
+    y = "Change in Moral Conviction", 
+    colour = "Topic",
+    title = "Changes in Percieved Moral Conviction regarding AI by Utilitarian Orientation")+
+  scale_color_brewer(palette = "Set1")+
+  theme_bw()+scale_y_continuous(limits = c(-50, 50))+
+  scale_x_continuous(limits = c(1, 5))
+
 
 ############ maybe one more set of graphs showing improvement pre-post?
 
