@@ -288,6 +288,28 @@ uhc_diff_gfx+geom_boxplot() +labs(
 
 #do it again for the other factors?
 
+
+## do changes for support by 'openness to change'
+
+uhc_diff_open<-ggplot(uhc_diff, aes(x=in_uhc_change, y=value))
+
+uhc_diff_open+geom_jitter(width = .2, height = .2, alpha = 0.5, size = 2) + geom_smooth(method = lm, linetype = "dashed", se = FALSE) +labs(
+  x = "Openness to Belief Change for UHC", 
+  y = "Change in Support for UHC", 
+  colour = "Topic",
+  title = "Changes in Support for Universal Health Care by Openness to Belief Change")+
+  scale_color_brewer(palette = "Set1")+ theme_bw()+scale_y_continuous(limits = c(-50, 50))
+
+
+
+
+
+
+
+
+
+
+
 #################################################
 ### DEATH PENALTY DIFFERENCE SCORES BY TOPIC  ###
 #################################################
@@ -313,6 +335,17 @@ cap_diff_gfx+geom_boxplot() +labs(
 ) + scale_color_brewer(palette = "Set1", labels = c("High Social Consensus + Moral Essay", "High Social Consensus + Pragmatic Essay",
                                                     "Low Social Consensus + Moral Essay", "Low Social Consensus + Pragmatic Essay"))+
   scale_x_discrete(labels = baseline_xlabs) + theme_bw()+scale_y_continuous(limits = c(-50, 50))
+
+
+
+cap_diff_open<-ggplot(cap_diff, aes(x=in_cap_change, y=value))
+
+cap_diff_open+geom_jitter(width = .2, height = .2, alpha = 0.5, size = 2) + geom_smooth(method = lm, linetype = "dashed", se = FALSE) +labs(
+  x = "Openness to Belief Change for Capital Punishment", 
+  y = "Change in Support for Capital Punishment", 
+  colour = "Topic",
+  title = "Changes in Support for Capital Punishment by Openness to Belief Change")+
+  scale_color_brewer(palette = "Set1")+ theme_bw()+scale_y_continuous(limits = c(-50, 50))
 
 
 ######################################
@@ -341,6 +374,14 @@ ai_diff_gfx+geom_boxplot() +labs(
                                                     "Low Social Consensus + Moral Essay", "Low Social Consensus + Pragmatic Essay"))+
   scale_x_discrete(labels = baseline_xlabs) + theme_bw()+scale_y_continuous(limits = c(-50, 50))
 
+ai_diff_open<-ggplot(ai_diff, aes(x=in_ai_change, y=value))
+
+ai_diff_open+geom_jitter(width = .2, height = .2, alpha = 0.5, size = 2) + geom_smooth(method = lm, linetype = "dashed", se = FALSE) +labs(
+  x = "Openness to Belief Change for Usage of AI in the Workplace", 
+  y = "Change in Support for Usage of AI in the Workplace", 
+  colour = "Topic",
+  title = "Changes in Support for Usage of AI in the Workplace by Openness to Belief Change")+
+  scale_color_brewer(palette = "Set1")+ theme_bw()+scale_y_continuous(limits = c(-50, 50))
 
 
 #####
@@ -639,3 +680,8 @@ TukeyHSD(res.aov)
 TukeyHSD(res.aov2)
 #initial moral conviction
 TukeyHSD(res.aov3)
+
+
+
+####### we can do a simple t-test to determine if we even have change pre-post #####
+
