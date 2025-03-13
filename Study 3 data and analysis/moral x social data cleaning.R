@@ -521,6 +521,15 @@ bort2<-pilot_data_short[!index,]
 pilot_data_short<-bort[,-31]
 
 library(data.table)
+
+#additional stuff so we can do the category split
+pilot_data_short$uhc_cat<-cut(pilot$in_uhc_supp, breaks=c(-51, -5, 5, 51),
+                   labels=c('Negative', 'Neutral', 'Positive'))
+pilot_data_short$cap_cat<-cut(pilot$in_cap_supp, breaks=c(-51, -5, 5, 51),
+                              labels=c('Negative', 'Neutral', 'Positive'))
+pilot_data_short$ai_cat<-cut(pilot$in_ai_supp, breaks=c(-51, -5, 5, 51),
+                              labels=c('Negative', 'Neutral', 'Positive'))
+
 pilot_data_long<-data.table::melt(setDT(pilot_data_short),measure=patterns("uhc_supp", "cap_supp", "ai_supp",
                                                                "uhc_conviction","cap_conviction","ai_conviction"), 
                       value.name=c("uhc_support", "cap_support", "ai_support",

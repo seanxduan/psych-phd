@@ -446,6 +446,22 @@ uhc_conv_util+geom_jitter(width = .2, height = .2, alpha = 0.5, size = 2) +
   theme_bw()+scale_y_continuous(limits = c(-50, 50))+
   scale_x_continuous(limits = c(1, 5))
 
+#deontological gfx
+
+uhc_conv_deon<-ggplot(uhc_mc, aes(x=deontological, y=value))
+
+uhc_conv_deon+geom_jitter(width = .2, height = .2, alpha = 0.5, size = 2) +
+  geom_smooth(method = lm, linetype = "dashed", se = FALSE) +
+  labs(
+    x = "Deontological Orientation", 
+    y = "Change in Moral Conviction", 
+    colour = "Topic",
+    title = "Moral Conviction Change for UHC by Deontological Orientation")+
+  scale_color_brewer(palette = "Set1")+
+  theme_bw()+scale_y_continuous(limits = c(-50, 50))+
+  scale_x_continuous(limits = c(1, 5))
+
+
 
 ######## for capital punishment #########
 
@@ -475,6 +491,21 @@ cap_conv_util+geom_jitter(width = .2, height = .2, alpha = 0.5, size = 2) +
     y = "Change in Moral Conviction", 
     colour = "Topic",
     title = "Changes in Percieved Moral Conviction regarding Capital Punishment by Utilitarian Orientation")+
+  scale_color_brewer(palette = "Set1")+
+  theme_bw()+scale_y_continuous(limits = c(-50, 50))+
+  scale_x_continuous(limits = c(1, 5))
+
+
+
+cap_conv_deon<-ggplot(cap_mc, aes(x=deontological, y=value))
+
+cap_conv_deon+geom_jitter(width = .2, height = .2, alpha = 0.5, size = 2) +
+  geom_smooth(method = lm, linetype = "dashed", se = FALSE) +
+  labs(
+    x = "Deontological Orientation", 
+    y = "Change in Moral Conviction", 
+    colour = "Topic",
+    title = "Moral Conviction Change for Capital Punishment by Deontological Orientation")+
   scale_color_brewer(palette = "Set1")+
   theme_bw()+scale_y_continuous(limits = c(-50, 50))+
   scale_x_continuous(limits = c(1, 5))
@@ -513,6 +544,21 @@ ai_conv_util+geom_jitter(width = .2, height = .2, alpha = 0.5, size = 2) +
   scale_color_brewer(palette = "Set1")+
   theme_bw()+scale_y_continuous(limits = c(-50, 50))+
   scale_x_continuous(limits = c(1, 5))
+
+
+ai_conv_deon<-ggplot(ai_mc, aes(x=deontological, y=value))
+
+ai_conv_deon+geom_jitter(width = .2, height = .2, alpha = 0.5, size = 2) +
+  geom_smooth(method = lm, linetype = "dashed", se = FALSE) +
+  labs(
+    x = "Deontological Orientation", 
+    y = "Change in Moral Conviction", 
+    colour = "Topic",
+    title = "Moral Conviction Change for Usage of AI in the Workplace by Deontological Orientation")+
+  scale_color_brewer(palette = "Set1")+
+  theme_bw()+scale_y_continuous(limits = c(-50, 50))+
+  scale_x_continuous(limits = c(1, 5))
+
 
 
 ############ maybe one more set of graphs showing improvement pre-post?
@@ -727,3 +773,541 @@ TukeyHSD(res.aov3)
 
 ####### we can do a simple t-test to determine if we even have change pre-post #####
 
+#maybe do t-tests first lol
+t.test(pilot$uhc_diff)
+t.test(pilot$cap_diff)
+t.test(pilot$ai_diff)
+
+
+#mirror density charts for each variable showing pre-post improvement regardless of condition
+library(ggplot2)
+library(hrbrthemes)
+
+
+p_density_top <-
+  pilot_long %>%
+  filter(time == "pre") %>%
+  ggplot(aes(uhc_support)) +
+  geom_density(fill = "purple") +
+  theme_minimal() +
+  theme(
+    axis.title = element_blank(),
+    axis.text = element_blank()
+  )
+p_density_top
+
+#this simple split density code seems to work?
+
+#holy shit i'm overthiking this - literally just use our original dataset (we dont need it to be 'long')
+#fucking hilarious
+
+#lets try to rework the original code again now
+
+p <- ggplot(pilot, aes(x=x) ) +
+  # Top
+  geom_density( aes(x = in_uhc_supp, y = ..density..), fill="#69b3a2" ) +
+  geom_label( aes(x=4.5, y=0.02, label="Initial Support for UHC"), color="#69b3a2") +
+  # Bottom
+  geom_density( aes(x = fn_uhc_supp, y = -..density..), fill= "#404080") +
+  geom_label( aes(x=4.5, y=-0.02, label="Final Support for UHC"), color="#404080") +
+  labs(
+    x = "Support for UHC", 
+    y = "Density", 
+    title = "Changes in Support for Universal Health Care After Both Manipulations") +
+  theme_minimal()+
+  scale_y_continuous(limits = c(-0.025, 0.025))
+p
+
+#graph is good, t-tests are good too.
+#lets see if we like this MORE or LESS than the stacked histogram/density plot?
+
+p2 <- ggplot(pilot, aes(x=x) ) +
+  # Top
+  geom_density( aes(x = in_uhc_supp, y = ..density.., alpha = 0.3), fill="#69b3a2" ) +
+  geom_label( aes(x=8.5, y=0.02, label="Initial Support for UHC"), color="#69b3a2") +
+  # Bottom
+  geom_density( aes(x = fn_uhc_supp, y = ..density.., alpha = 0.3), fill= "#404080") +
+  geom_label( aes(x=25.5, y=0.023, label="Final Support for UHC"), color="#404080") +
+  labs(
+    x = "Support for UHC", 
+    y = "Density", 
+    title = "Changes in Support for Universal Health Care After Both Manipulations") +
+  theme_minimal()+ theme(legend.position="none") +
+  scale_y_continuous(limits = c(0, 0.025))
+p2
+
+
+p3 <- ggplot(pilot, aes(x=x) ) +
+  # Top
+  geom_density( aes(x = in_cap_supp, y = ..density.., alpha = 0.3), fill="#69b3a2" ) +
+  geom_label( aes(x=2.5, y=0.015, label="Initial Support for Capital Punishment"), color="#69b3a2") +
+  # Bottom
+  geom_density( aes(x = fn_cap_supp, y = ..density.., alpha = 0.3), fill= "#404080") +
+  geom_label( aes(x=23.5, y=0.017, label="Final Support for Capital Punishment"), color="#404080") +
+  labs(
+    x = "Support for Capital Punishment", 
+    y = "Density", 
+    title = "Changes in Support for Capital Punishment After Both Manipulations") +
+  theme_minimal()+ theme(legend.position="none") +
+  scale_y_continuous(limits = c(0, 0.025))
+p3
+
+p4 <- ggplot(pilot, aes(x=x) ) +
+  # Top
+  geom_density( aes(x = in_ai_supp, y = ..density.., alpha = 0.3), fill="#69b3a2" ) +
+  geom_label( aes(x=-23, y=0.014, label="Initial Support for AI"), color="#69b3a2") +
+  # Bottom
+  geom_density( aes(x = fn_ai_supp, y = ..density.., alpha = 0.3), fill= "#404080") +
+  geom_label( aes(x=17, y=0.017, label="Final Support for AI"), color="#404080") +
+  labs(
+    x = "Support for Usage of AI in the Workplace", 
+    y = "Density", 
+    title = "Changes in Support for Usage of AI in the Workplace After Both Manipulations") +
+  theme_minimal()+ theme(legend.position="none") +
+  scale_y_continuous(limits = c(0, 0.025))
+p4
+
+
+########### New graphs for Lab Meeting for Victoria ###
+
+###########################################################################
+#'time interaction w/ main effects, social consensus and moral conviction'#
+###########################################################################
+
+#using pilot_long, trying to have different groups by pre-post
+pilot_long$comb_cond<-paste(pilot_long$consen_cond,pilot_long$conv_cond)
+pilot_long$time <- factor(pilot_long$time, levels = c("pre", "post"))
+
+#effect of WHAT on SUPPORT
+p5<-ggplot(pilot_long, aes(x=time, y=uhc_support, color = consen_cond)) +
+  #geom_boxplot() +
+  geom_jitter(size=1, alpha=0.7, width = .05) +labs() +
+  geom_smooth(method = "lm", se = FALSE, aes(group = comb_cond))
+#maybe have a combined condition graph instead?
+
+p5 + facet_wrap(~ consen_cond)
+#this is literally... something, but not what victora wants, I think...
+
+#how about... time with JUST the social consensus, and JUST the moral conviction?
+p5 + facet_wrap(~conv_cond, labeller = labeller(conv_cond = 
+                                                c("MORALRESPONSIBILITYBLOCK" = "Moral Condition",
+                                                  "PRAGMATIC/PRACTICALBLOCK" = "Pragmatic Condition")
+                                                ))+
+  labs(
+    x = "Time", 
+    y = "Support for UHC", 
+    title = "Changes in Support for Universal Health Care by Time") +
+  theme_minimal()+ scale_color_brewer(palette = "Set2", labels = c("High Social Consensus",
+                                                                   "Low Social Consensus"))+
+  scale_x_discrete(labels = c("Pre","Post"))+ theme(legend.title = element_blank())
+
+#lets work on this some more?
+#this is good... we can try this for our other three items?
+
+p5b<-ggplot(pilot_long, aes(x=time, y=cap_support, color = consen_cond)) +
+  #geom_boxplot() +
+  geom_jitter(size=1, alpha=0.7, width = .05) +labs() +
+  geom_smooth(method = "lm", se = FALSE, aes(group = comb_cond))
+p5b + facet_wrap(~conv_cond, labeller = labeller(conv_cond = 
+                                                  c("MORALRESPONSIBILITYBLOCK" = "Moral Condition",
+                                                    "PRAGMATIC/PRACTICALBLOCK" = "Pragmatic Condition")))+
+  labs(
+    x = "Time", 
+    y = "Support for UHC", 
+    title = "Changes in Support for Universal Health Care by Time") +
+  theme_minimal()+ scale_color_brewer(palette = "Set1", labels = c("High Social Consensus",
+                                                                   "Low Social Consensus"))+
+  scale_x_discrete(labels = c("Pre","Post"))
+
+## and now for AI
+p5c<-ggplot(pilot_long, aes(x=time, y=ai_support, color = consen_cond)) +
+  #geom_boxplot() +
+  geom_jitter(size=1, alpha=0.7, width = .05) +labs() +
+  geom_smooth(method = "lm", se = FALSE, aes(group = comb_cond))
+p5c + facet_wrap(~conv_cond, labeller = labeller(conv_cond = 
+                                                   c("MORALRESPONSIBILITYBLOCK" = "Moral Condition",
+                                                     "PRAGMATIC/PRACTICALBLOCK" = "Pragmatic Condition")))+
+  labs(
+    x = "Time", 
+    y = "Support for UHC", 
+    title = "Changes in Support for Universal Health Care by Time") +
+  theme_minimal()+ scale_color_brewer(palette = "Set1", labels = c("High Social Consensus",
+                                                                   "Low Social Consensus"))+
+  scale_x_discrete(labels = c("Pre","Post"))
+
+
+######## do we need to do the same thing... but facet by social consensus?
+#yeah lets try it
+#or... is it overly complicated to have the colors split by the other condition?
+
+p5d<-ggplot(pilot_long, aes(x=time, y=uhc_support, color = consen_cond)) +
+  #geom_boxplot() +
+  geom_jitter(size=1, alpha=0.7, width = .05) +labs() +
+  geom_smooth(method = "lm", se = FALSE, aes(group = consen_cond))+
+  labs(
+    x = "Time", 
+    y = "Support for UHC", 
+    title = "Changes in Support for Universal Health Care by Time") +
+  theme_minimal()+ scale_color_brewer(palette = "Set1", labels = c("High Social Consensus",
+                                                                   "Low Social Consensus"))+
+  scale_x_discrete(labels = c("Pre","Post"))+ theme(legend.title = element_blank())
+
+p5d
+
+#try our version of p5 but w/ facet by sc instead?
+p5e<-ggplot(pilot_long, aes(x=time, y=uhc_support, color = conv_cond)) +
+  #geom_boxplot() +
+  geom_jitter(size=1, width = .05) +labs() +
+  geom_smooth(method = "lm", se = FALSE, aes(group = comb_cond))
+
+p5e + facet_wrap(~consen_cond, labeller = labeller(consen_cond = 
+                                                  c("SocialConsensus-High" = "High Social Consensus",
+                                                    "SocialConsensus-Low" = "Low Social Consensus")
+))+
+  labs(
+    x = "Time", 
+    y = "Support for UHC", 
+    title = "Changes in Support for Universal Health Care by Time") +
+  theme_minimal()+ scale_color_brewer(palette = "Pastel1", labels = c("Moral Condition",
+                                                                   "Pragmatic Condition"))+
+  scale_x_discrete(labels = c("Pre","Post"))+ theme(legend.title = element_blank())
+#try to have facet by social consensus condition and still have pre-post
+
+p5f<-ggplot(pilot_long, aes(x=time, y=uhc_support)) +
+  #geom_boxplot() +
+  geom_jitter(size=1, alpha=0.5, width = .05) +labs() +
+  geom_smooth(method = "lm", se = FALSE, aes(group = consen_cond))+
+  labs(
+    x = "Time", 
+    y = "Support for UHC", 
+    title = "Changes in Support for Universal Health Care by Time") +
+  theme_minimal()+ scale_color_brewer(palette = "Set1", labels = c("High Social Consensus",
+                                                                   "Low Social Consensus"))+
+  scale_x_discrete(labels = c("Pre","Post"))+ theme(legend.title = element_blank())
+
+p5f+facet_wrap(~consen_cond, labeller = labeller(consen_cond = c("SocialConsensus-High" = "High Social Consensus",
+                                                     "SocialConsensus-Low" = "Low Social Consensus")))
+
+### essentially do our original p5 graphs but for.... moral conviction
+
+p6a<-ggplot(pilot_long, aes(x=time, y=uhc_mconv, color = conv_cond)) +
+  #geom_boxplot() +
+  geom_jitter(size=1, alpha=0.7, width = .05) +labs() +
+  geom_smooth(method = "lm", se = FALSE, aes(group = conv_cond))+
+  labs(
+    x = "Time", 
+    y = "Percieved Moral Conviction", 
+    title = "Changes in Moral Conviction for Universal Health Care by Time") +
+  theme_minimal()+ scale_color_brewer(palette = "Set1", labels = c("Moral Condition",
+                                                                   "Pragmatic Condition"))+
+  scale_x_discrete(labels = c("Pre","Post"))+ theme(legend.title = element_blank())
+
+p6a
+
+###
+p6b<-ggplot(pilot_long, aes(x=time, y=uhc_mconv)) +
+  #geom_boxplot() +
+  geom_jitter(size=1, alpha=0.5, width = .05) +labs() +
+  geom_smooth(method = "lm", se = FALSE, aes(group = conv_cond))+
+  labs(
+    x = "Time", 
+    y = "Percieved Moral Conviction", 
+    title = "Changes in Moral Conviction for Universal Health Care by Time") +
+  theme_minimal()+ scale_color_brewer(palette = "Set1", labels = c("Moral Condition",
+                                                                   "Pragmatic Condition"))+
+  scale_x_discrete(labels = c("Pre","Post"))+ theme(legend.title = element_blank())
+
+p6b+facet_wrap(~conv_cond, labeller = labeller(conv_cond = c("MORALRESPONSIBILITYBLOCK" = "Moral Condition",
+                                                             "PRAGMATIC/PRACTICALBLOCK" = "Pragmatic Condition")))
+##########
+p6c<-ggplot(pilot_long, aes(x=time, y=uhc_mconv, color = conv_cond)) +
+  #geom_boxplot() +
+  geom_jitter(size=1, width = .05) +labs() +
+  geom_smooth(method = "lm", se = FALSE, aes(group = comb_cond))
+
+p6c + facet_wrap(~consen_cond, labeller = labeller(consen_cond = 
+                                                     c("SocialConsensus-High" = "High Social Consensus",
+                                                       "SocialConsensus-Low" = "Low Social Consensus")
+))+
+  labs(
+    x = "Time", 
+    y = "Percieved Moral Conviction", 
+    title = "Changes in Moral Conviction for Universal Health Care by Time") +
+  theme_minimal()+ scale_color_brewer(palette = "Pastel1", labels = c("Moral Condition",
+                                                                      "Pragmatic Condition"))+
+  scale_x_discrete(labels = c("Pre","Post"))+ theme(legend.title = element_blank())
+#####
+p6d<-ggplot(pilot_long, aes(x=time, y=uhc_mconv, color = consen_cond)) +
+  #geom_boxplot() +
+  geom_jitter(size=1, alpha=0.7, width = .05) +labs() +
+  geom_smooth(method = "lm", se = FALSE, aes(group = comb_cond))
+
+
+p6d + facet_wrap(~conv_cond, labeller = labeller(conv_cond = 
+                                                  c("MORALRESPONSIBILITYBLOCK" = "Moral Condition",
+                                                    "PRAGMATIC/PRACTICALBLOCK" = "Pragmatic Condition")
+))+
+  labs(
+    x = "Time", 
+    y = "Percieved Moral Conviction", 
+    title = "Changes in Moral Conviction for Universal Health Care by Time") +
+  theme_minimal()+ scale_color_brewer(palette = "Set2", labels = c("High Social Consensus",
+                                                                   "Low Social Consensus"))+
+  scale_x_discrete(labels = c("Pre","Post"))+ theme(legend.title = element_blank())
+
+
+
+
+
+#what about a single graph that just shows time by social consensus?
+
+#try something like our overlaid density graphs... but faceted by soc/moral manipulation?
+
+p6 <- ggplot(pilot, aes(x=x) ) +
+  # Top
+  geom_density( aes(x = in_uhc_supp, y = ..density.., alpha = 0.3), fill="#69b3a2" ) +
+  geom_label( aes(x=8.5, y=0.02, label="Initial Support for UHC"), color="#69b3a2") +
+  # Bottom
+  geom_density( aes(x = fn_uhc_supp, y = ..density.., alpha = 0.3), fill= "#404080") +
+  geom_label( aes(x=25.5, y=0.023, label="Final Support for UHC"), color="#404080") +
+  labs(
+    x = "Support for UHC", 
+    y = "Density", 
+    title = "Changes in Support for Universal Health Care After Both Manipulations") +
+  theme_minimal()+ theme(legend.position="none") +
+  scale_y_continuous(limits = c(0, 0.025))
+p6
+
+#going to figure out how to make columns for each value... with each time set aside separately?
+#lets try it w/ consent first
+pilot_spc<-subset(pilot,consen_cond == 'SocialConsensus-High')
+pilot_spc2<-subset(pilot,consen_cond == 'SocialConsensus-Low')
+pilot_spc[,c(2,11)]
+pilot_spc2[,c(2,11)]
+
+pilot_p6<-cbind(pilot_spc[,c(2,11)],pilot_spc2[,c(2,11)])
+#try merge
+p6<-merge(pilot_spc[,c(2,11)],pilot_spc2[,c(2,11)])
+#nope...
+#try new package? cbindx?
+install.packages("gdata")
+library(gdata)
+pilot6<-cbindX(pilot_spc[,c(2,11)],pilot_spc2[,c(2,11)])
+
+
+#first two rows are sc high, next two are sc low
+#rename the columns ig
+colnames(pilot6)<-c("ISHI","FSHI","ISLO","FSLO")
+
+
+p6 <- ggplot(pilot6, aes(x=x) ) +
+  # Top
+  geom_density( aes(x = ISHI, y = ..density.., alpha = 0.3), fill="#06ba24" ) +
+  geom_label( aes(x=8.5, y=0.02, label="Initial Support for UHC - High SC"), color="#06ba24") +
+  geom_density( aes(x = FSHI, y = ..density.., alpha = 0.3), fill= "#e67e22") +
+  geom_label( aes(x=32, y=0.023, label="Final Support for UHC - High SC"), color="#e67e22") +
+  # Bottom
+  geom_density( aes(x = ISLO, y = -..density.., alpha = 0.3), fill="#af7ac5" ) +
+  geom_label( aes(x=8, y=-0.0225, label="Initial Support for UHC - Low SC"), color="#af7ac5") +
+  # Bottom
+  geom_density( aes(x = FSLO, y = -..density.., alpha = 0.3), fill= "#2874a6") +
+  geom_label( aes(x=30, y=-0.025, label="Final Support for UHC - Low SC"), color="#2874a6") +
+  labs(
+    x = "Support for UHC", 
+    y = "Density", 
+    title = "Changes in Support for Universal Health Care by Social Consensus Condition") +
+  theme_minimal()+ theme(legend.position="none") +
+  scale_y_continuous(limits = c(-0.025, 0.025))
+p6
+#fiddle with colors and such but... this looks roughly right?
+#this is JUST the graph for social consensus 
+#lets try it again for moral conviction?
+
+
+pilot_spc<-subset(pilot,conv_cond == 'MORALRESPONSIBILITYBLOCK')
+pilot_spc2<-subset(pilot,conv_cond == 'PRAGMATIC/PRACTICALBLOCK')
+pilot_spc[,c(2,11)]
+pilot_spc2[,c(2,11)]
+pilot7<-cbindX(pilot_spc[,c(2,11)],pilot_spc2[,c(2,11)])
+colnames(pilot7)<-c("ISMR","FSMR","ISPR","FSPR")
+
+p7 <- ggplot(pilot7, aes(x=x) ) +
+  # Top
+  geom_density( aes(x = ISMR, y = ..density.., alpha = 0.3), fill="#06ba24" ) +
+  geom_label( aes(x=8.5, y=0.022, label="Initial Support for UHC - Moral Condition"), color="#06ba24") +
+  geom_density( aes(x = FSMR, y = ..density.., alpha = 0.3), fill= "#e67e22") +
+  geom_label( aes(x=32, y=0.025, label="Final Support for UHC - Moral Condition"), color="#e67e22") +
+  # Bottom
+  geom_density( aes(x = ISPR, y = -..density.., alpha = 0.3), fill="#af7ac5" ) +
+  geom_label( aes(x=8, y=-0.0225, label="Initial Support for UHC - Practical Condition"), color="#af7ac5") +
+  # Bottom
+  geom_density( aes(x = FSPR, y = -..density.., alpha = 0.3), fill= "#2874a6") +
+  geom_label( aes(x=30, y=-0.025, label="Final Support for UHC - Practical Condition"), color="#2874a6") +
+  labs(
+    x = "Support for UHC", 
+    y = "Density", 
+    title = "Changes in Support for Universal Health Care by Moral Conviction Condition") +
+  theme_minimal()+ theme(legend.position="none") +
+  scale_y_continuous(limits = c(-0.025, 0.025))
+p7
+
+#we can try and see how it splits out for our other conditions?
+
+#lets try a density chart plainly for amount of 'change' by condition
+pilot7$mr_diff<-(pilot7$FSMR-pilot7$ISMR)
+#bind the extra material to it's own df
+pilot8<-cbindX(pilot6[,c(5,6)],pilot7[,c(5,6)])
+
+p8<- ggplot(pilot8, aes(x=x) ) +
+  # Top
+  geom_density( aes(x = hi_diff, y = ..density.., alpha = 0.3), fill="#06ba24" ) +
+  geom_label( aes(x=35, y=0.025, label="Change in Support for UHC - High Consensus"), color="#06ba24") +
+  geom_density( aes(x = lo_diff, y = ..density.., alpha = 0.3), fill= "#e67e22") +
+  geom_label( aes(x=-35, y=0.025, label="Change in Support for UHC - Low Consensus"), color="#e67e22") +
+  # Bottom
+  geom_density( aes(x = mr_diff, y = -..density.., alpha = 0.3), fill="#af7ac5" ) +
+  geom_label( aes(x=38, y=-0.0225, label="Change in Support for UHC - Moral Condition"), color="#af7ac5") +
+  # Bottom
+  geom_density( aes(x = pr_diff, y = -..density.., alpha = 0.3), fill= "#2874a6") +
+  geom_label( aes(x=-35, y=-0.025, label="Change in Support for UHC - Pragmatic Condition"), color="#2874a6") +
+  labs(
+    x = "Support for UHC", 
+    y = "Density", 
+    title = "Amount of Change in Support for UHC Across All Conditions") +
+  theme_minimal()+ theme(legend.position="none") +
+  scale_y_continuous(limits = c(-0.05, 0.05))
+p8
+
+#######
+#initial support predicts final support?
+#######
+
+
+p9<-ggplot(pilot, aes(x=in_uhc_supp, y=fn_uhc_supp)) + 
+  geom_point(position ="jitter")+geom_smooth(method="lm" )+
+  labs(
+    x = "Initial Support for UHC", 
+    y = "Final Support for UHC", 
+    title = "Association between Initial and Final levels of Support for UHC") +
+  theme_minimal()
+
+p9
+
+
+###utilitarian orientation predicts support for AI###
+p10<-ggplot(pilot, aes(x=utilitarian, y=fn_uhc_supp)) + 
+  geom_point(position ="jitter")+geom_smooth(method="lm" )+
+  labs(
+    x = "Utilitarian Orientation", 
+    y = "Final Support for UHC", 
+    title = "Association between Utilitarian Orientation and Support for UHC") +
+  theme_minimal()
+p10
+
+#ancillary graphs for moral conviction##
+
+#Social Consensus Manipulation associated with increased Moral Conviction for AI#
+
+p11<-ggplot(pilot_long, aes(x=time, y=ai_mconv, color = consen_cond)) +
+  #geom_boxplot() +
+  geom_jitter(size=1, alpha=0.7, width = .05) +labs() +
+  geom_smooth(method = "lm", se = FALSE, aes(group = consen_cond))+
+  labs(
+    x = "Time", 
+    y = "Percieved Moral Conviction", 
+    title = "Changes in Moral Conviction for AI in the Workplace by Social Consensus Condition") +
+  theme_minimal()+ scale_color_brewer(palette = "Set1", labels = c("High Consensus",
+                                                                   "Low Consensus"))+
+  scale_x_discrete(labels = c("Pre","Post"))+ theme(legend.title = element_blank())
+
+p11
+
+p12<-ggplot(pilot_long, aes(x=time, y=ai_mconv)) +
+  geom_jitter(size=1, alpha=0.7, width = .05) +labs() +
+  geom_smooth(method = "lm", se = FALSE, aes(group = consen_cond))+
+  labs(
+    x = "Time", 
+    y = "Percieved Moral Conviction", 
+    title = "Changes in Moral Conviction for AI in the Workplace by Social Consensus Condition") +
+  theme_minimal()+ scale_color_brewer(palette = "Set1", labels = c("High Consensus",
+                                                                   "Low Consensus"))+
+  scale_x_discrete(labels = c("Pre","Post"))+ theme(legend.title = element_blank())
+
+p12+facet_wrap(~consen_cond,labeller = labeller(consen_cond =c("SocialConsensus-High" = "High Social Consensus",
+                                                               "SocialConsensus-Low" = "Low Social Consensus")))
+
+#try a 3rd factor (initially in support of/initially against)
+#see how this washes out, and if people in one bucket move more than in others
+
+#first shot is to check the histogram
+hist(pilot$in_uhc_supp)
+hist(pilot$in_cap_supp)
+hist(pilot$in_ai_supp)
+
+hist(pilot$fn_cap_supp)
+
+#maybe would try splitting each into... 3 groups?
+#against/neutral/for
+
+#do what we did for supp by condition...
+#however, add in a facet by category
+#have category facet be split by... what
+pilot$uhc_cat<-cut(pilot$in_uhc_supp, breaks=c(-51, -5, 5, 51),
+    labels=c('Negative', 'Neutral', 'Positive'))
+
+#whoops do it for pilot_long
+pilot_long$uhc_cat<-cut(pilot_long$in_uhc_supp, breaks=c(-51, -5, 5, 51),
+                   labels=c('Negative', 'Neutral', 'Positive'))
+#uhh... we actually need to add this BEFORE the melt whoops.
+#maybe do a fresh melt here?
+
+#lets try ripping out the column in pilot and using that as a ... match?
+pilot[,c(21,36)]
+
+
+
+p13<-ggplot(pilot_long, aes(x=time, y=uhc_support, color = consen_cond)) +
+  #geom_boxplot() +
+  geom_jitter(size=1, alpha=0.7, width = .05) +labs() +
+  geom_smooth(method = "lm", se = FALSE, aes(group = consen_cond))
+
+p13 + facet_wrap(~uhc_cat)+
+  labs(
+    x = "Time", 
+    y = "Support for UHC", 
+    title = "Changes in Support for Universal Health Care by Time") +
+  theme_minimal()+ scale_color_brewer(palette = "Set2", labels = c("High Social Consensus",
+                                                                   "Low Social Consensus"))+
+  scale_x_discrete(labels = c("Pre","Post"))+ theme(legend.title = element_blank())
+
+#we can see a bit of a 'ceiling' effect here....?
+
+#we can try this again w/ the other two things
+
+p14<-ggplot(pilot_long, aes(x=time, y=cap_support, color = consen_cond)) +
+  #geom_boxplot() +
+  geom_jitter(size=1, alpha=0.7, width = .05) +labs() +
+  geom_smooth(method = "lm", se = FALSE, aes(group = consen_cond))
+
+p14 + facet_wrap(~cap_cat)+
+  labs(
+    x = "Time", 
+    y = "Support for Capital Punishment", 
+    title = "Changes in Support for Capital Punishment by Time") +
+  theme_minimal()+ scale_color_brewer(palette = "Dark2", labels = c("High Social Consensus",
+                                                                   "Low Social Consensus"))+
+  scale_x_discrete(labels = c("Pre","Post"))+ theme(legend.title = element_blank())
+
+p15<-ggplot(pilot_long, aes(x=time, y=ai_support, color = consen_cond)) +
+  #geom_boxplot() +
+  geom_jitter(size=1, alpha=0.7, width = .05) +labs() +
+  geom_smooth(method = "lm", se = FALSE, aes(group = consen_cond))
+
+p15 + facet_wrap(~ai_cat)+
+  labs(
+    x = "Time", 
+    y = "Support for AI", 
+    title = "Changes in Support for AI by Time") +
+  theme_minimal()+ scale_color_brewer(palette = "Accent", labels = c("High Social Consensus",
+                                                                    "Low Social Consensus"))+
+  scale_x_discrete(labels = c("Pre","Post"))+ theme(legend.title = element_blank())
