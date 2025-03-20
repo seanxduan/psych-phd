@@ -174,6 +174,26 @@ plot4b + scale_color_brewer(palette = "Set1")
 sup_uhc<-lm(fn_uhc_supp ~ conv_cond*consen_cond+in_uhc_supp+in_uhc_change+in_uhc_familiar+utilitarian+deontological, data = pilot)
 summary(sup_uhc)
 
+### secret bonus for testing if mc level actually affects stuff)
+sup_uhc3<-lm(fn_uhc_supp ~ conv_cond+fn_uhc_conviction*consen_cond+in_uhc_supp+in_uhc_change+in_uhc_familiar+utilitarian+deontological, data = pilot)
+summary(sup_uhc3)
+
+#huh, conviction plots tightly to final support
+#lets see if this holds up for initial or final as well
+cor(pilot$in_uhc_supp,pilot$in_uhc_conviction)
+cor(pilot$fn_uhc_supp,pilot$fn_uhc_conviction)
+
+cor(pilot$in_uhc_supp,pilot$fn_uhc_supp)
+cor(pilot$in_uhc_conviction,pilot$fn_uhc_conviction)
+
+plot(pilot$in_uhc_supp,pilot$in_uhc_conviction)
+
+plot(pilot$fn_uhc_supp,pilot$fn_uhc_conviction)
+
+#very... interesting
+###
+
+
 conv_uhc<-lm(fn_uhc_conviction ~ conv_cond*consen_cond+in_uhc_conviction+in_uhc_change+in_uhc_familiar+utilitarian+deontological, data = pilot)
 summary(conv_uhc)
 
@@ -184,12 +204,47 @@ summary(mini_conv_uhc)
 sup_cap<-lm(fn_cap_supp ~ conv_cond*consen_cond+in_cap_supp+in_cap_change+in_cap_familiar+utilitarian+deontological, data = pilot)
 summary(sup_cap)
 
+###
+sup_cap2<-lm(fn_cap_supp ~ conv_cond+fn_cap_conviction*consen_cond+in_cap_supp+in_cap_change+in_cap_familiar+utilitarian+deontological, data = pilot)
+summary(sup_cap2)
+
+
+cor(pilot$in_cap_supp,pilot$in_cap_conviction)
+cor(pilot$fn_cap_supp,pilot$fn_cap_conviction)
+
+cor(pilot$in_cap_supp,pilot$fn_cap_supp)
+cor(pilot$in_cap_conviction,pilot$fn_cap_conviction)
+
+plot(pilot$in_cap_supp,pilot$in_cap_conviction)
+
+plot(pilot$fn_cap_supp,pilot$fn_cap_conviction)
+###
+
+
+
 conv_cap<-lm(fn_cap_conviction ~ conv_cond*consen_cond+in_cap_conviction+in_cap_change+in_cap_familiar+utilitarian+deontological, data = pilot)
 summary(conv_cap)
 
 #ai
 sup_ai<-lm(fn_ai_supp ~ conv_cond*consen_cond+in_ai_supp+in_ai_change+in_ai_familiar+utilitarian+deontological, data = pilot)
 summary(sup_ai)
+
+sup_ai2<-lm(fn_ai_supp ~ conv_cond+fn_ai_conviction*consen_cond+in_ai_supp+in_ai_change+in_ai_familiar+utilitarian+deontological, data = pilot)
+summary(sup_ai2)
+
+
+cor(pilot$in_ai_supp,pilot$in_ai_conviction)
+cor(pilot$fn_ai_supp,pilot$fn_ai_conviction)
+
+cor(pilot$in_ai_supp,pilot$fn_ai_supp)
+cor(pilot$in_ai_conviction,pilot$fn_ai_conviction)
+
+plot(pilot$in_ai_supp,pilot$in_ai_conviction)
+
+plot(pilot$fn_ai_supp,pilot$fn_ai_conviction)
+
+### very interdasting - good that we looked at it regardless
+
 
 conv_ai<-lm(fn_ai_conviction ~ conv_cond*consen_cond+in_ai_conviction+in_ai_change+in_ai_familiar+utilitarian+deontological, data = pilot)
 summary(conv_ai)
@@ -1507,3 +1562,5 @@ test.sens <- sensemakr(model = sup_uhc,
                                 kd = 1:3)
 plot(test.sens, type = "extreme")
 ovb_minimal_reporting(test.sens, format = "html")
+
+summary(test.sens)
