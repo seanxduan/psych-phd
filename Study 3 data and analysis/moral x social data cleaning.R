@@ -397,6 +397,13 @@ pilot_data$Pol_High_1[pilot_data$Pol_High_1 == 29]<-11
 pilot_data$utilitarian<-rowMeans(pilot_data[,1:6])
 #lets look @ total deontological (simple avg of util 7-12)
 pilot_data$deontological<-rowMeans(pilot_data[,7:12])
+#alpha check
+library(psych)
+?alpha        
+psych::alpha(pilot_data[,1:6])
+psych::alpha(pilot_data[,7:12])
+
+
 
 #conviction score uhc_initial
 #reverse score second item

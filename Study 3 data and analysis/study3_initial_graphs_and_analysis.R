@@ -695,7 +695,7 @@ library("gtsummary")
 
 #peel out only the demographic info?
 
-d1<-pilot[,c(16:20)]
+d1<-pilot[,c(17:21)]
 d1$Age_High<-as.numeric(d1$Age_High)
 d1$Pol_High_1<-as.numeric(d1$Pol_High_1)
 
@@ -1564,3 +1564,32 @@ plot(test.sens, type = "extreme")
 ovb_minimal_reporting(test.sens, format = "html")
 
 summary(test.sens)
+
+
+##################################
+# Cronbach's alpha for our stuff #
+##################################
+install.packages("psych")
+library(psych)
+
+#hilarious (going to have to look at other data lmao)
+
+#############################
+# citing R and the packages #
+#############################
+install.packages("grateful")
+library(grateful)
+
+install.packages("mediation")
+
+cite_packages(out.dir = ".")   
+
+########################
+# peel out group means #
+########################
+
+zp<-subset(pilot, conv_cond == "MORALRESPONSIBILITYBLOCK" | consen_cond == "SocialConsensus-High",
+                  select=c(in_ai_supp))
+mean(zp[,])
+sd(zp[,])
+hist(zp[,])
