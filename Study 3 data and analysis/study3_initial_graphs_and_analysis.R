@@ -1593,3 +1593,23 @@ zp<-subset(pilot, conv_cond == "MORALRESPONSIBILITYBLOCK" | consen_cond == "Soci
 mean(zp[,])
 sd(zp[,])
 hist(zp[,])
+
+#############################################################
+# group means for moral conviction manipulation check table #
+#############################################################
+
+zp<-subset(pilot, conv_cond == "PRAGMATIC/PRACTICALBLOCK",
+           select=c(fn_uhc_conviction))
+mean(zp[,])
+sd(zp[,])
+hist(zp[,])
+
+### Moral conviction x time checking
+mc_uhc<-lm(uhc_mconv ~ conv_cond*time, data = pilot_long)
+summary(mc_uhc)
+
+mc_cap<-lm(cap_mconv ~ conv_cond*time, data = pilot_long)
+summary(mc_cap)
+
+mc_ai<-lm(ai_mconv ~ conv_cond*time, data = pilot_long)
+summary(mc_ai)
