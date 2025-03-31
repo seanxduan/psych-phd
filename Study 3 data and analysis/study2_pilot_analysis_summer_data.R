@@ -214,7 +214,7 @@ summary(anc_conv_climate)
 anc_supp_exercise <- aov(exercise_support ~ condition + exercise_belief_c, data = pilot)
 summary(anc_supp_exercise)
 # differences in openess to belief change = support for exercise!!
-anc_conv_exercise <- aov(exercise_moral_c ~ condition + exercise_belief_c, data = pilot)
+anc_conv_exercise <- aov(exercise_moral_c ~ condition * exercise_belief_c, data = pilot)
 summary(anc_conv_exercise)
 #no changes in moral conviction
 

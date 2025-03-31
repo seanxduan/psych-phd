@@ -1,5 +1,5 @@
 ### As per usual, lets start by getting tables setup ###
-pilot<-read.csv("pilot_clean.csv")
+pilot<-read.csv("pilot_clean_2.csv")
 
 #we're gonna start w/ gtsummary, since that's how we closed it out originally
 library("lme4")
