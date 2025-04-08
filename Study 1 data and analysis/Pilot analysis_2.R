@@ -149,6 +149,9 @@ summary(m7)
 #ok, this should mostly be for looking @ the structure of everything for the purpose
 #of making graphs.
 
+m7<-lm(UHC_SUP~ Time * condition + NLINE + SNS_SCORE + utilitarian + deontological + SILS_1_1, data = pilot_model_long)
+summary(m7)
+
 library(ggplot2)
 ### material for making tables for our results sections
 library(texreg)
@@ -162,6 +165,23 @@ library(modelsummary)
 library(webshot2)
 modelsummary(m7)
 #oh nice we can use lists of our outputs and then use that to codge together a nice set of tables!
+
+
+#################
+# Study 1 redux #
+#################
+
+#we see that the first m7 is significant! this is good!
+
+m7<-lm(UHC_SUP~ Time * condition + NLINE + SNS_SCORE + utilitarian + deontological + SILS_1_1, data = pilot_model_long)
+summary(m7)
+
+m8<-lm(DEATH_SUP~ Time * condition + NLINE + SNS_SCORE + utilitarian + deontological + SILS_1_1, data = pilot_model_long)
+summary(m8)
+
+m9<-lm(CLIM_SUP~ Time * condition + NLINE + SNS_SCORE + utilitarian + deontological + SILS_1_1, data = pilot_model_long)
+summary(m9)
+
 
 #uhc pros
 m2<-lm(UHC ~condition + NLINE + SNS_SCORE + utilitarian + deontological + SILS_1_1, data = pilot)
