@@ -197,3 +197,74 @@ plot3 + facet_wrap(~ condition)+ scale_color_brewer(palette = "Set1")
 plot4<-ggplot(pilot_model_long, aes(x=Time, y=SLAVE_SUP, color=condition)) +
   geom_boxplot() 
 plot4 + facet_wrap(~ condition)+ scale_color_brewer(palette = "Set1")
+
+
+
+#####################################################
+# simple 2 sample t-tests to test H1a, H1b, and H1c #
+#####################################################
+
+#
+pilot$climate<-(pilot$P1-pilot$Pre_P1)
+pilot$UHC<-(pilot$P2-pilot$Pre_P2)
+pilot$death<-(pilot$P3-pilot$Pre_P3)
+pilot$slave<-(pilot$P4-pilot$Pre_P4)
+
+#should use subset, lets try to peel out UHC time 1 (i.e. Pre_P2)
+#for high condition
+subset(pilot, condition=="High",
+       select=Pre_P2)
+
+#and for low condition
+subset(pilot, condition=="Low",
+       select=Pre_P2)
+
+t.test(x = (subset(pilot, condition=="High",
+                   select=Pre_P2)), y = (subset(pilot, condition=="Low",
+                                                select=Pre_P2)))
+
+# do the same for capital punishment
+subset(pilot, condition=="High",
+       select=Pre_P3)
+
+t.test(x = (subset(pilot, condition=="High",
+                   select=Pre_P3)), y = (subset(pilot, condition=="Low",
+                                                select=Pre_P3)))
+
+# do the same for climate change
+
+t.test(x = (subset(pilot, condition=="High",
+                   select=Pre_P1)), y = (subset(pilot, condition=="Low",
+                                                select=Pre_P1)))
+
+#alright now for H1b social consensus increases support
+subset(pilot, condition=="High",
+       select=Pre_P2)
+subset(pilot, condition=="High",
+       select=P2)
+
+t.test(x = (subset(pilot, condition=="High",
+                   select=P2)), y = (subset(pilot, condition=="High",
+                                               select=Pre_P2)))
+
+t.test(x = (subset(pilot, condition=="High",
+                   select=P3)), y = (subset(pilot, condition=="High",
+                                            select=Pre_P3)))
+
+t.test(x = (subset(pilot, condition=="High",
+                   select=P1)), y = (subset(pilot, condition=="High",
+                                            select=Pre_P1)))
+
+#H1c
+
+t.test(x = (subset(pilot, condition=="Low",
+                   select=P2)), y = (subset(pilot, condition=="Low",
+                                            select=Pre_P2)))
+
+t.test(x = (subset(pilot, condition=="Low",
+                   select=P3)), y = (subset(pilot, condition=="Low",
+                                            select=Pre_P3)))
+
+t.test(x = (subset(pilot, condition=="Low",
+                   select=P1)), y = (subset(pilot, condition=="Low",
+                                            select=Pre_P1)))

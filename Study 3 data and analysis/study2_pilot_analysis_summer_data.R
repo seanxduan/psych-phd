@@ -384,3 +384,92 @@ contrast(emm, contrasts, adjust = "bonferroni")
 #needing to make our tables for our pre-planned pairwise comparisions
 pairwise.t.test(pilot$uhc_moral_c, pilot$condition)
 
+
+
+###################################################
+# ok lets try this with contrast codes instead    #
+# just like Victoria recommended in her feedback  #
+# so I can do the thing she wants and get into it #
+###################################################
+
+
+
+#lets test w/ the dataset we see in the hw
+library(readxl)
+dat <- read_excel("Cowan Lab Dataset.xlsx", sheet = 2)
+dat$Group <- factor(dat$Group)
+dat$group.f <- factor(dat$Group, labels =
+                        c("1" = "6-8 Years",
+                          "2" = "8-10 Years",
+                          "3" = "10-13 Years",
+                          "4" = "Adults"))
+
+C1 <- c(-1/3, -1/3, -1/3, 1)
+C2 <- c(-1/2, -1/2, 1, 0)
+C3 <- c(-1, 1, 0, 0)
+C4 <- c(-1, 1, 0, 0)
+
+levels(dat$group.f)
+
+contrasts(dat$group.f) <- cbind(C1, C2, C3)
+
+Test1 <- aov(AbimV1stK ~ group.f, dat)
+summary.lm(Test1)
+
+# this is the small example
+# we can test it the other way too though!
+
+#lets try it w/ our data
+
+pilot<-read.csv("study2_pilot_clean_summer.csv")
+pilot$condition <- factor(pilot$condition)
+levels(pilot$condition)
+
+#lets add some contrasts
+#control / hedonic / MP / MR / Prag#
+
+#first contrast testing control vs MP and MR
+
+C1 <- c(1, 0, -1/2, -1/2, 0)
+
+#second contrast testing control vs hedonic and prag
+
+C2 <- c(1,-1/2, 0, 0, -1/2)
+
+#third contrast testing hedonic vs prag
+
+C3 <- c(0, 1, 0, 0, -1)
+
+#fourth contrast testing MP vs MR
+
+C4 <- c(0, 0, -1, 1, 0)
+
+contrasts(pilot$condition) <- cbind(C1, C2, C3, C4)
+Test1 <- aov(uhc_moral_c ~ condition, pilot)
+summary.lm(Test1)
+
+Test1a <- aov(uhc_support ~ condition, pilot)
+summary.lm(Test1a)
+
+#no significance here
+
+Test2 <- aov(death_moral_c ~ condition, pilot)
+summary.lm(Test2)
+
+Test2a <- aov(death_support ~ condition, pilot)
+summary.lm(Test2a)
+
+#
+Test3 <- aov(exercise_moral_c ~ condition, pilot)
+summary.lm(Test3)
+
+Test3a <- aov(exercise_support ~ condition, pilot)
+summary.lm(Test3a)
+
+#
+Test4 <- aov(climate_moral_c ~ condition, pilot)
+summary.lm(Test4)
+
+Test4a <- aov(climate_support ~ condition, pilot)
+summary.lm(Test4a)
+
