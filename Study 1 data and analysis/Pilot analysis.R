@@ -268,3 +268,5 @@ t.test(x = (subset(pilot, condition=="Low",
 t.test(x = (subset(pilot, condition=="Low",
                    select=P1)), y = (subset(pilot, condition=="Low",
                                             select=Pre_P1)))
+
+?aov
