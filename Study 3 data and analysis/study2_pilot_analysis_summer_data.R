@@ -33,6 +33,38 @@ plot2a<-ggplot(pilot, aes(x=condition, y=uhc_moral_c, color=condition)) +
   )
 plot2a + scale_color_brewer(palette = "Set1")
 
+#fiddle with this one? yes - also, recolor
+#manually set group colors
+group.colors <- c("Control" = "#333BFF", "Hedonic" = "#CC6600", "Pragmatic" ="#9633FF", "Moral Piggybacking" = "#E2FF33", "Moral Responsibility" = "#E3DB71")
+
+plot2a<-ggplot(pilot, aes(x=condition, y=uhc_moral_c)) +
+  geom_boxplot() +labs(
+    x = "Moral Conviction Manipulation", 
+    y = "Moral Conviction on Support for UHC", 
+    colour = "Moral Conviction Manipulation",
+    title = "Manipulation on Moral Conviction of UHC Beliefs"
+  )
+plot2a + scale_fill_manual(values=group.colors)
+#lets try another method?
+
+my_colors <- c("forestgreen", "forestgreen", "red","red","black")
+plot2a<-ggplot(pilot, aes(x=condition, y=uhc_moral_c, color=condition)) +
+  geom_boxplot() +labs(
+    x = "Moral Conviction Manipulation", 
+    y = "Moral Conviction on Support for UHC", 
+    colour = "Moral Conviction Manipulation",
+    title = "Manipulation on Moral Conviction of UHC Beliefs"
+  )
+plot2a + scale_color_manual(values = my_colors)+theme_bw()
+
+
+pilot$condition<-as.factor(pilot$condition)
+
+levels(pilot$condition)
+
+pilot$condition<-factor(pilot$condition, levels = c("Moral Piggybacking", "Moral Responsibility", "Pragmatic", "Hedonic", "Control"))
+
+
 plot3a<-ggplot(pilot, aes(x=condition, y=uhc_persuadable, color=condition)) +
   geom_boxplot() +labs(
     x = "Moral Conviction Manipulation", 

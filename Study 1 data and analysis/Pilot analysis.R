@@ -122,6 +122,18 @@ pilot_model_long <- reshape(
 pilot_model_long$Time<-as.factor(pilot_model_long$Time)
 m7<-lm(UHC_SUP~ Time + condition + NLINE + SNS_SCORE + utilitarian + deontological + SILS_1_1, data = pilot_model_long)
 summary(m7)
+
+m7<-lm(UHC_SUP~ Time*condition + NLINE + SNS_SCORE + utilitarian + deontological + SILS_1_1, data = pilot_model_long)
+summary(m7)
+
+
+#huh ok well maybe our result was better than expected?
+m7<-lm(P2~ Time*condition + Pre_P2+ NLINE + SNS_SCORE + utilitarian + deontological + SILS_1_1, data = pilot_model_long)
+summary(m7)
+
+
+
+
 #ok, this should mostly be for looking @ the structure of everything for the purpose
 #of making graphs.
 
@@ -269,4 +281,32 @@ t.test(x = (subset(pilot, condition=="Low",
                    select=P1)), y = (subset(pilot, condition=="Low",
                                             select=Pre_P1)))
 
+#test
+t.test(x = (subset(pilot, condition=="High",
+                   select=P1)), y = (subset(pilot, condition=="Low",
+                                            select=P1)))
+t.test(x = (subset(pilot, condition=="High",
+                   select=P2)), y = (subset(pilot, condition=="Low",
+                                            select=P2)))
+t.test(x = (subset(pilot, condition=="High",
+                   select=P3)), y = (subset(pilot, condition=="Low",
+                                            select=P3)))
+#there's a difference between the two groups as a whole at time 2
+#however, there are not significant differences between the starting value at t1 and t2, they just go in opposite directions
+
 ?aov
+
+
+#check to see if our interaction model is working or busted
+
+#huh ok well maybe our result was better than expected?
+m7<-lm(UHC_SUP ~ Time*condition + NLINE + SNS_SCORE + utilitarian + deontological + SILS_1_1, data = pilot_model_long)
+summary(m7)
+
+m7<-lm(CLIM_SUP ~ Time*condition + NLINE + SNS_SCORE + utilitarian + deontological + SILS_1_1, data = pilot_model_long)
+summary(m7)
+
+m7<-lm(DEATH_SUP ~ Time*condition + NLINE + SNS_SCORE + utilitarian + deontological + SILS_1_1, data = pilot_model_long)
+summary(m7)
+
+# either i'm misunderstanding this or .... something? we can walk through it w/ victoria
