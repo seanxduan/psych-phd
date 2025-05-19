@@ -58,6 +58,8 @@ plot2a<-ggplot(pilot, aes(x=condition, y=uhc_moral_c, color=condition)) +
 plot2a + scale_color_manual(values = my_colors)+theme_bw()
 
 
+
+
 pilot$condition<-as.factor(pilot$condition)
 
 levels(pilot$condition)
@@ -81,7 +83,9 @@ plot4a<-ggplot(pilot, aes(x=condition, y=uhc_support, color=condition)) +
     colour = "Moral Conviction Manipulation",
     title = "Support of UHC by Moral Conviction Manipulation"
   )
-plot4a + scale_color_brewer(palette = "Set1")
+plot4a + scale_color_manual(values = my_colors)+theme_bw()
+
+
 
 ### Death
 

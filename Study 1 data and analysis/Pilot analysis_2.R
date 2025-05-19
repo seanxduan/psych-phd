@@ -521,6 +521,18 @@ fplot+geom_smooth(method = lm, alpha=.2, aes(group = condition))+ scale_color_ma
 
 #additional graphs in same style for the three other conditions we're looking at
 
+#alrighty
+#we want to mod this so it looks like the 'better poster' graph.
+
+#we want a 'grouped' bar chart
+
+lplot<-ggplot(pilot_model_long, aes(fill=condition, y=UHC_SUP, x=Time)) + 
+  geom_bar(position="dodge", stat="identity")
+
+lplot
+
+
+
 
 fplot2<-ggplot(pilot_model_long, aes(x=Time, y=CLIM_SUP, color=condition))+ geom_point(alpha =.3, position = position_jitter(width=.07))
 
@@ -546,10 +558,92 @@ fplot3+geom_smooth(method = lm, alpha=.2, aes(group = condition))+ scale_color_m
     subtitle = "Perception of increased social consensus causes increased support"
   ) + scale_x_discrete(labels = fplot_xlabs) + theme_bw()
 
+#try to get the geom_bar set up right?
+
+# Load ggplot2
+library(ggplot2)
+
+# create dummy data
+data <- data.frame(
+  name=letters[1:5],
+  value=sample(seq(4,15),5),
+  sd=c(1,0.2,3,2,4)
+)
+
+# Most basic error bar
+ggplot(data) +
+  geom_bar( aes(x=name, y=value), stat="identity", fill="skyblue", alpha=0.7) +
+  geom_errorbar( aes(x=name, ymin=value-sd, ymax=value+sd), width=0.4, colour="orange", alpha=0.9, size=1.3)
+
+#wait a minute... maybe we just cheese out the values into their own df
+#then try to reference that for our final graph?
+
+#lets give that a shot?
+
+z<-subset(pilot_model_long, condition == 'High' & Time == 'pre', select = c(UHC_SUP))
+mean(z$UHC_SUP)
+sd(z$UHC_SUP)
+sd(z$UHC_SUP) / sqrt(length(z$UHC_SUP))
+
+z<-subset(pilot_model_long, condition == 'High' & Time == 'post', select = c(UHC_SUP))
+mean(z$UHC_SUP)
+sd(z$UHC_SUP)
+sd(z$UHC_SUP) / sqrt(length(z$UHC_SUP))
+##
+
+z<-subset(pilot_model_long, condition == 'Low' & Time == 'pre', select = c(UHC_SUP))
+mean(z$UHC_SUP)
+sd(z$UHC_SUP)
+sd(z$UHC_SUP) / sqrt(length(z$UHC_SUP))
+z<-subset(pilot_model_long, condition == 'Low' & Time == 'post', select = c(UHC_SUP))
+mean(z$UHC_SUP)
+sd(z$UHC_SUP)
+sd(z$UHC_SUP) / sqrt(length(z$UHC_SUP))
+
+
+time <- c(rep("Pre-Intervention" , 2) , rep("Post-Intervention" , 2))
+condition <- rep(c("High Social Consensus" , "Low Social Consensus") , 2)
+mean <- c(67.896, 67.437, 72.956, 64.901 )
+sd <- c(25.237, 26.749, 24.301, 27.177)
+se<- c(1.592, 1.678, 1.533, 1.705 )
+ldata <- data.frame(time, condition, mean, sd, se)
+
+ggplot(ldata, aes(fill=condition, y=mean, x=time)) + 
+  geom_bar(position="dodge", stat="identity")+
+  geom_errorbar( aes(x=condition, ymin=mean-sd, ymax=mean+sd), width=0.4, colour="orange", alpha=0.9, size=1.3)
+
+#pretty close... adjust colors and ordering, and then we're good?
+#maybe add legends and other stuff?
+
+#lets try the example from "https://towardsdatascience.com/grouped-barplot-with-error-bars-in-r-ee87b112204d/"
+
+#make sure to order the levels
+ldata$time<-as.factor(ldata$time)
+levels(ldata$time)
+#fiddle with levels, post on right, pre on left
+
+ldata$time<-relevel(ldata$time, "Pre-Intervention")
+#orders our level correctly
+
+barplot <- ldata %>% 
+  ggplot(
+    aes(x = time, y = mean, fill = condition))+
+  geom_col( position = "dodge", width = 0.5, alpha = 1, color = "black", size = 0.1)
+
+barplot + geom_errorbar(aes(ymin = mean-se, ymax = mean+se),
+                       position =  position_dodge(width = 0.5), width = 0.2)+
+  scale_y_continuous(expand = expansion(0),
+                     limits = c(0,100))+
+  scale_fill_manual(values = c("goldenrod", "lightgrey"),
+                    name = NULL)+ # NULL removes the legend title "Category".
+  theme_bw()+
+  theme(legend.position = c(0.2, 0.80))+labs(
+    x = "Time", 
+    y = "Support for Universal Health Care")
 
 
 
-
+#add in the error bars, and then adjust colors and other bits
 
 
 

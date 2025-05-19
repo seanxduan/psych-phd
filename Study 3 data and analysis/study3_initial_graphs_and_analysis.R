@@ -647,9 +647,25 @@ summary(mconv_ai2)
 
 #see how this holds up for UHC and cap?
 
+
+
+##########
+##########
+##########
 ## uhc
 sup_uhc2<-lm(uhc_support ~ conv_cond*consen_cond+in_uhc_change+in_uhc_familiar+utilitarian+deontological+time, data = pilot_long)
 summary(sup_uhc2)
+
+sup_uhc3<-lm(uhc_support ~ conv_cond+consen_cond+in_uhc_change+in_uhc_familiar+utilitarian+deontological+time, data = pilot_long)
+summary(sup_uhc3)
+###########
+###########
+###########
+#these are the models which we are giga relying on to show our shit
+#
+#the real question is... how do we graph this so it BOPS?
+
+
 
 #our two interventions were not significantly different from EACH OTHER
 #however... the interventions DID have a significant different from baseline.
@@ -952,9 +968,15 @@ p5 + facet_wrap(~conv_cond, labeller = labeller(conv_cond =
     x = "Time", 
     y = "Support for UHC", 
     title = "Changes in Support for Universal Health Care by Time") +
-  theme_minimal()+ scale_color_brewer(palette = "Set2", labels = c("High Social Consensus",
+  theme_minimal()+ scale_color_brewer(palette = 3, labels = c("High Social Consensus",
                                                                    "Low Social Consensus"))+
-  scale_x_discrete(labels = c("Pre","Post"))+ theme(legend.title = element_blank())
+  scale_x_discrete(labels = c("Pre","Post"))+ theme(legend.title = element_blank())+ scale_color_manual(values = my_colors)
+
+my_colors <- c("purple","black")
+
+#try to manually set the colors?
+
+
 
 #lets work on this some more?
 #this is good... we can try this for our other three items?
@@ -1007,7 +1029,7 @@ p5d<-ggplot(pilot_long, aes(x=time, y=uhc_support, color = consen_cond)) +
                                                                    "Low Social Consensus"))+
   scale_x_discrete(labels = c("Pre","Post"))+ theme(legend.title = element_blank())
 
-p5d
+p5d+ scale_color_manual(values = my_colors)
 
 #try our version of p5 but w/ facet by sc instead?
 p5e<-ggplot(pilot_long, aes(x=time, y=uhc_support, color = conv_cond)) +
