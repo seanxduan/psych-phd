@@ -1635,3 +1635,101 @@ summary(mc_cap)
 
 mc_ai<-lm(ai_mconv ~ conv_cond*time, data = pilot_long)
 summary(mc_ai)
+
+
+#########
+#bonus shit for SMDM 2025
+#########
+#how do we graph two group intervention change well?
+
+#first thought... same graph as before... but facet by type?
+
+
+
+
+
+
+
+
+#gotta generate the table with which to make the graph first
+
+time <- c(rep("Pre-Intervention" , 4) , rep("Post-Intervention" , 4))
+consen_cond <- rep(c("High Social Consensus" , "Low Social Consensus") , 4)
+conv_cond<- rep(c(rep("Moral Responsibility" , 2) , rep("Pragmatic/Practical" , 2)),2)
+
+
+#calc the mean and SE
+
+z<-subset(pilot_long, consen_cond == 'SocialConsensus-High' &
+            time == 'pre' &
+            conv_cond == 'MORALRESPONSIBILITYBLOCK', select = c(uhc_support))
+z<-subset(pilot_long, consen_cond == 'SocialConsensus-Low' &
+            time == 'pre' &
+            conv_cond == 'MORALRESPONSIBILITYBLOCK', select = c(uhc_support))
+z<-subset(pilot_long, consen_cond == 'SocialConsensus-High' &
+            time == 'pre' &
+            conv_cond == 'PRAGMATIC/PRACTICALBLOCK', select = c(uhc_support))
+z<-subset(pilot_long, consen_cond == 'SocialConsensus-Low' &
+            time == 'pre' &
+            conv_cond == 'PRAGMATIC/PRACTICALBLOCK', select = c(uhc_support))
+mean(z[,])
+sd(z[,]) / sqrt(length(z[,]))
+
+z<-subset(pilot_long, consen_cond == 'SocialConsensus-High' &
+            time == 'post' &
+            conv_cond == 'MORALRESPONSIBILITYBLOCK', select = c(uhc_support))
+z<-subset(pilot_long, consen_cond == 'SocialConsensus-Low' &
+            time == 'post' &
+            conv_cond == 'MORALRESPONSIBILITYBLOCK', select = c(uhc_support))
+z<-subset(pilot_long, consen_cond == 'SocialConsensus-High' &
+            time == 'post' &
+            conv_cond == 'PRAGMATIC/PRACTICALBLOCK', select = c(uhc_support))
+z<-subset(pilot_long, consen_cond == 'SocialConsensus-Low' &
+            time == 'post' &
+            conv_cond == 'PRAGMATIC/PRACTICALBLOCK', select = c(uhc_support))
+mean(z[,])
+sd(z[,]) / sqrt(length(z[,]))
+
+
+mean <- c(17.486,
+          13.190,
+          22.118,
+          15.926,
+          23.183,
+          18.365,
+          24.606,
+          18.577)
+se<- c(2.106,
+       2.115,
+       1.800,
+       1.705,
+       2.061,
+       1.872,
+       1.796,
+       1.912)
+
+ldata <- data.frame(time, consen_cond, conv_cond, mean, se)
+
+ldata$time<-as.factor(ldata$time)
+levels(ldata$time)
+#fiddle with levels, post on right, pre on left
+
+ldata$time<-relevel(ldata$time, "Pre-Intervention")
+#orders our level correctly
+
+barplot2 <- ldata %>% 
+  ggplot(
+    aes(x = time, y = mean, fill = consen_cond))+
+  geom_col( position = "dodge", width = 0.5, alpha = 1, color = "black", size = 0.1)
+
+barplot2 + geom_errorbar(aes(ymin = mean-se, ymax = mean+se),
+                         position =  position_dodge(width = 0.5), width = 0.2)+
+  scale_y_continuous(expand = expansion(0),
+                     limits = c(0,30))+
+  scale_fill_manual(values = c("goldenrod", "lightgrey"),
+                    name = "")+ # NULL removes the legend title "Category".
+  theme_bw()+
+  theme(legend.position = c(0.15, 0.850))+
+  labs(
+    x = "Time", 
+    y = "Support for Universal Health Care")+facet_wrap(~conv_cond)

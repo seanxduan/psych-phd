@@ -644,10 +644,26 @@ barplot + geom_errorbar(aes(ymin = mean-se, ymax = mean+se),
 
 
 #add in the error bars, and then adjust colors and other bits
+#adjust the data itself for the y-axis!
 
+ldata2<-ldata
+ldata2$mean<-ldata2$mean-50
 
+barplot2 <- ldata2 %>% 
+  ggplot(
+    aes(x = time, y = mean, fill = condition))+
+  geom_col( position = "dodge", width = 0.5, alpha = 1, color = "black", size = 0.1)
 
-
+barplot2 + geom_errorbar(aes(ymin = mean-se, ymax = mean+se),
+                        position =  position_dodge(width = 0.5), width = 0.2)+
+  scale_y_continuous(expand = expansion(0),
+                     limits = c(0,30))+
+  scale_fill_manual(values = c("goldenrod", "lightgrey"),
+                    name = NULL)+ # NULL removes the legend title "Category".
+  theme_bw()+
+  theme(legend.position = c(0.2, 0.80))+labs(
+    x = "Time", 
+    y = "Support for Universal Health Care")
 
 
 #getting things set up so we can directly test the time x interaction condition ... which we didn't do originally
